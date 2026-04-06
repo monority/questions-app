@@ -37,3 +37,14 @@ export const CATEGORIES = [
   { id: 12, name: 'Musique' },
   { id: 10, name: 'Livres' },
 ] as const;
+
+export const BOT_NAMES = ['Bot Alpha', 'Bot Beta', 'Bot Gamma', 'Bot Delta', 'Bot Epsilon', 'Bot Zeta'] as const;
+
+export const BOT_COLORS: PlayerColor[] = [
+  { bg: '#ef4444', border: '#f87171', name: 'Rouge' },
+  { bg: '#f59e0b', border: '#fbbf24', name: 'Orange' },
+  { bg: '#10b981', border: '#34d399', name: 'Vert' },
+  { bg: '#3b82f6', border: '#60a5fa', name: 'Bleu' },
+  { bg: '#8b5cf6', border: '#a78bfa', name: 'Violet' },
+  { bg: '#ec4899', border: '#f472b6', name: 'Rose' },
+];

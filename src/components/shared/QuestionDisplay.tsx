@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { Question } from '../../types/game';
 import { DIFFICULTY_COLORS } from '../../config/constants';
 
@@ -13,7 +14,7 @@ const DIFFICULTY_MAP: Record<string, keyof typeof DIFFICULTY_COLORS> = {
   'Difficile': 'hard',
 };
 
-export function QuestionDisplay({ question, questionNumber, totalQuestions }: QuestionDisplayProps) {
+export const QuestionDisplay = memo(function QuestionDisplay({ question, questionNumber, totalQuestions }: QuestionDisplayProps) {
   const difficultyKey = DIFFICULTY_MAP[question.difficulty] || question.difficulty;
   
   return (
@@ -34,4 +35,4 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions }: Qu
       <h2 className="question-text">{question.question}</h2>
     </div>
   );
-}
+});

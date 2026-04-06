@@ -54,7 +54,7 @@ export function GameScreen({ players: initialPlayers, mode, questions, onGameEnd
     
     const randomIdx = Math.floor(Math.random() * availableIndices.length);
     return availableIndices[randomIdx];
-  }, [usedQuestionIndices, questions.length]);
+  }, [questions, usedQuestionIndices]);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(() => {
     if (partyMode) {

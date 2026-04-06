@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, memo } from 'react';
 
 interface TimerProps {
   duration: number;
@@ -7,7 +7,7 @@ interface TimerProps {
   key?: string | number;
 }
 
-export function Timer({ duration, onTimeUp, isPaused, key }: TimerProps) {
+export const Timer = memo(function Timer({ duration, onTimeUp, isPaused, key }: TimerProps) {
   const [timeLeft, setTimeLeft] = useState(duration);
   const rafRef = useRef<number | null>(null);
   const endTimeRef = useRef<number>(0);
@@ -74,4 +74,4 @@ export function Timer({ duration, onTimeUp, isPaused, key }: TimerProps) {
       <span className="timer-value">{timeLeft}s</span>
     </div>
   );
-}
+});

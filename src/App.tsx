@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import type { Player } from './types/game';
 import { SetupScreen } from './components/setup/SetupScreen';
 import { GameScreen } from './components/game/GameScreen';
@@ -7,27 +6,13 @@ import { HomeScreen } from './components/HomeScreen';
 import { LoadingSpinner } from './components/shared/LoadingSpinner';
 import { useGame } from './hooks';
 import { usePlayer } from './hooks/usePlayer';
+import { useTheme } from './hooks/useTheme';
 
 function App() {
   const game = useGame();
   const { updateStats } = usePlayer();
+  const { theme, toggleTheme } = useTheme();
   
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('theme') as 'dark' | 'light') || 'dark';
-    }
-    return 'dark';
-  });
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-  };
-
   const handleGameEnd = (players: Player[]) => {
     const mainPlayer = players[0];
     if (mainPlayer) {
