@@ -40,7 +40,6 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
   const [editingName, setEditingName] = useState('');
 
   const isMultiplayerMode = ['duel', 'party', 'tournament', 'competitive', 'cooperative'].includes(gameMode);
-  const isMultiplayerReady = isMultiplayerMode && players.length >= 2;
   const startButtonText = isMultiplayerMode 
     ? (players.length < 2 ? `Ajoutez au moins 2 joueurs (${players.length}/2)` : 'Commencer')
     : 'Commencer';
@@ -364,8 +363,13 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
 
         <button 
           className="btn-primary start-btn-large" 
-          onClick={handleStart}
-          disabled={!isMultiplayerReady}
+          onClick={() => {
+            if (isMultiplayerMode && players.length < 2) {
+              setShowAddPlayerModal(true);
+            } else {
+              handleStart();
+            }
+          }}
         >
           <span>{startButtonText}</span>
           <span className="btn-icon">
