@@ -1,0 +1,115 @@
+@layer components {
+  .final-results {
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .results-header {
+    margin-bottom: 2rem;
+  }
+
+  .results-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: var(--gradient-warning);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .results-header p {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+  }
+
+  .podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 2rem 0;
+  }
+
+  .podium-place {
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
+    padding: 1.5rem 1rem;
+    min-width: 140px;
+    border: 2px solid var(--player-color);
+  }
+
+  .podium-place.place-1 {
+    order: 2;
+    border-color: var(--color-gold);
+    background: linear-gradient(180deg, var(--color-warning-muted), var(--bg-secondary));
+  }
+
+  .podium-place.place-2 {
+    order: 1;
+  }
+
+  .podium-place.place-3 {
+    order: 3;
+  }
+
+  .podium-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--player-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 auto 0.75rem;
+  }
+
+  .podium-name {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .podium-score {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .results-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+  }
+
+  .stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .results-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+  }
+}

@@ -1,0 +1,114 @@
+@layer components {
+  .players-status-bar {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: var(--space-md);
+  }
+
+  .player-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    font-size: 0.875rem;
+    transition: all var(--duration-slow);
+  }
+
+  .player-status.answered {
+    border-color: var(--success);
+    background: var(--color-success-muted);
+  }
+
+  .player-status.waiting {
+    border-color: var(--border);
+    opacity: 0.7;
+  }
+
+  .player-status-name {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .player-status-icon {
+    font-size: 1rem;
+  }
+
+  .simultaneous-answers {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+  }
+
+  .player-answer-section {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .player-answer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm) var(--space-md);
+    color: white;
+    font-weight: 600;
+  }
+
+  .player-answer-header .player-score {
+    font-size: 0.875rem;
+    opacity: 0.9;
+  }
+
+  .waiting-answer {
+    padding: var(--space-md);
+  }
+
+  .waiting-answer .answer-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+  }
+
+  .answer-result {
+    padding: var(--space-md);
+    text-align: center;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .answer-result.correct {
+    background: var(--color-success-muted);
+    color: var(--success);
+  }
+
+  .answer-result.incorrect {
+    background: var(--color-error-muted);
+    color: var(--error);
+  }
+
+  .answer-result.timeout {
+    background: var(--color-warning-muted);
+    color: var(--color-warning-secondary);
+  }
+
+  .answer-result .correct-answer {
+    display: block;
+    margin-top: var(--space-xs);
+    font-size: 0.875rem;
+    font-weight: 400;
+    opacity: 0.8;
+  }
+
+  .solo-mode {
+    padding: var(--space-xl);
+    text-align: center;
+    color: var(--text-secondary);
+  }
+}

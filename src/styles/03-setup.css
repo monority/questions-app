@@ -1,0 +1,199 @@
+@layer components {
+  .setup-header {
+    text-align: center;
+    padding: 3rem 0;
+  }
+
+  .setup-header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .logo-icon {
+    font-size: 2.5rem;
+  }
+
+  .setup-header p {
+    color: var(--text-secondary);
+    font-size: 1.125rem;
+  }
+
+  .setup-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .setup-footer {
+    padding: 2rem 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .player-setup {
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .player-count {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    background: var(--bg-card);
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+  }
+
+  .mode-selection h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .mode-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .mode-card {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: left;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+  }
+
+  .mode-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .mode-card.selected {
+    border-color: var(--accent);
+    background: var(--color-accent-muted);
+  }
+
+  .mode-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .mode-icon.competitive {
+    background: var(--gradient-warning);
+  }
+
+  .mode-icon.cooperative {
+    background: var(--gradient-success);
+  }
+
+  .mode-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+  }
+
+  .mode-card h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .mode-card p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .mode-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .mode-features span {
+    font-size: 0.75rem;
+    background: var(--bg-card);
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    color: var(--text-secondary);
+  }
+
+  .game-options {
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+  }
+
+  .game-options h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .option-group {
+    margin-bottom: 1rem;
+  }
+
+  .option-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .option-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+  }
+
+  .option-group select {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+    color: var(--text-primary);
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .option-group select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+}

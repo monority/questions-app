@@ -1,0 +1,190 @@
+@layer components {
+  .multiplayer-setup {
+    margin: var(--space-md) 0;
+    padding: var(--space-md);
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+  }
+
+  .multiplayer-setup h2 {
+    font-size: 1.125rem;
+    color: var(--text-primary);
+    margin-bottom: var(--space-md);
+  }
+
+  .player-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+  }
+
+  .player-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+  }
+
+  .player-item.human-player {
+    border-color: var(--accent);
+    background: var(--color-accent-muted);
+  }
+
+  .player-item .player-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    font-size: 0.875rem;
+  }
+
+  .player-item .player-name {
+    flex: 1;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .player-item .player-tag {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+  }
+
+  .player-item.bot-player .player-tag {
+    background: var(--color-warning-muted);
+    color: var(--color-warning-secondary);
+  }
+
+  .remove-player-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    transition: all var(--duration-normal);
+  }
+
+  .remove-player-btn:hover {
+    color: var(--error);
+    background: var(--color-error-muted);
+  }
+
+  .remove-player-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .add-bot-btn {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-primary);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all var(--duration-normal);
+  }
+
+  .add-bot-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--color-accent-muted);
+  }
+
+  .add-bot-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .add-player-buttons {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+  }
+
+  .add-player-buttons .add-bot-btn {
+    flex: 1;
+  }
+
+  .player-item.added-player {
+    border-color: var(--border);
+  }
+
+  .player-item.added-player .player-tag {
+    background: var(--color-success-muted);
+    color: var(--color-success-secondary);
+  }
+
+  .player-item .player-name {
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: var(--radius-sm);
+    transition: background var(--duration-normal);
+  }
+
+  .player-item .player-name:hover {
+    background: var(--bg-hover);
+  }
+
+  .player-item .edit-input {
+    flex: 1;
+    padding: 4px 8px;
+    font-size: 0.875rem;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    outline: none;
+  }
+
+  .player-actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  .edit-player-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    transition: all var(--duration-normal);
+  }
+
+  .edit-player-btn:hover {
+    color: var(--accent);
+    background: var(--color-accent-muted);
+  }
+
+  .edit-player-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .player-hint {
+    margin-top: var(--space-sm);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+
+  .no-players-message {
+    text-align: center;
+    color: var(--text-muted);
+    padding: var(--space-md);
+    font-size: 0.875rem;
+  }
+}

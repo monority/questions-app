@@ -1,0 +1,66 @@
+/* ==========================================================================
+   RESET & BASE STYLES - Senior Dev 2026
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
+
+@layer reset {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+    line-height: 1.5;
+    transition: background-color var(--duration-normal) var(--ease-default), 
+                color var(--duration-normal) var(--ease-default);
+  }
+
+  #root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .app {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  img, svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  button, input, textarea, select {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    cursor: pointer;
+    background: none;
+    border: none;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ul, ol {
+    list-style: none;
+  }
+}

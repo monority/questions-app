@@ -1,0 +1,14 @@
+@import './00-tokens.css';
+@import './01-reset.css';
+@import './02-theme.css';
+@import './03-setup.css';
+@import './04-game.css';
+@import './05-results.css';
+@import './06-shared.css';
+@import './07-animations.css';
+@import './08-responsive.css';
+@import './09-homescreen.css';
+@import './10-leaderboard.css';
+@import './11-multiplayer.css';
+@import './12-simultaneous.css';
+@import './13-modal.css';

@@ -1,0 +1,40 @@
+@layer utilities {
+  @media (max-width: 600px) {
+    .setup-screen {
+      padding: 1rem;
+    }
+    
+    .setup-header h1 {
+      font-size: 2rem;
+    }
+    
+    .mode-cards {
+      grid-template-columns: 1fr;
+    }
+    
+    .players-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .game-header {
+      flex-wrap: 3;
+    }
+    
+    .score-board {
+      order: 3;
+      width: 100%;
+    }
+    
+    .question-text {
+      font-size: 1.125rem;
+    }
+    
+    .podium {
+      flex-wrap: wrap;
+    }
+    
+    .podium-place {
+      min-width: 100px;
+    }
+  }
+}
