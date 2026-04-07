@@ -83,6 +83,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+    transition: text-decoration-color 0.2s, color 0.2s;
+  }
+
+  .user-name:hover {
+    color: var(--accent);
+    text-decoration-style: solid;
   }
 
   .user-menu .logout-btn {

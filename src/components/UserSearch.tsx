@@ -61,7 +61,11 @@ export function UserSearch({ query, setQuery, results, loading, selectedUser, on
           <div className="selected-user-profile">
             <h3>Profil de {selectedUser.username}</h3>
             <p>Score: {selectedUser.score} points</p>
-            <p>Membre depuis: {new Date(selectedUser.createdAt).toLocaleDateString('fr-FR')}</p>
+            <p>Membre depuis: {
+            selectedUser.createdAt && !isNaN(Date.parse(selectedUser.createdAt))
+              ? new Date(selectedUser.createdAt).toLocaleDateString('fr-FR')
+              : 'Inconnu'
+          }</p>
           </div>
         )}
       </motion.div>

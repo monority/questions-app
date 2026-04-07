@@ -55,18 +55,28 @@ export function useUserSearch() {
       try {
         const { data, error } = await supabase
           .from('leaderboard')
-          .select('*')
+          .select('user_id, username, score')
           .ilike('username', `%${sanitizedQuery}%`)
           .order('score', { ascending: false })
           .limit(10);
 
         if (error) throw error;
-        setResults((data || []).map(d => ({
-          id: d.id,
-          username: d.username,
-          score: d.score,
-          createdAt: d.created_at || d.createdAt,
-        })));
+        
+        const resultsWithDates = await Promise.all((data || []).map(async (d) => {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('created_at')
+            .eq('id', d.user_id)
+            .single();
+          return {
+            id: d.user_id,
+            username: d.username,
+            score: d.score,
+            createdAt: profile?.created_at || new Date().toISOString(),
+          };
+        }));
+        
+        setResults(resultsWithDates);
       } catch (err) {
         console.error('Search error:', err);
       } finally {

@@ -7,11 +7,10 @@ interface ProfileModalProps {
 }
 
 export function ProfileModal({ profile, onClose }: ProfileModalProps) {
-  const memberSince = new Date(profile.createdAt).toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  });
+  const validDate = profile.createdAt && !isNaN(Date.parse(profile.createdAt)) ? new Date(profile.createdAt) : null;
+  const memberSince = validDate 
+    ? validDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+    : 'Inconnu';
 
   const avatarLetter = profile.username?.[0]?.toUpperCase() ?? profile.email?.[0]?.toUpperCase() ?? '?';
   const displayName = profile.username || profile.email?.split('@')[0] || 'Joueur';
