@@ -18,6 +18,7 @@ const Leaderboard = lazy(() => import('./Leaderboard').then(m => ({ default: m.L
 const LoginModal = lazy(() => import('./LoginModal').then(m => ({ default: m.LoginModal })));
 const UserSearch = lazy(() => import('./UserSearch').then(m => ({ default: m.UserSearch })));
 
+
 interface HomeScreenProps {
   onStartGame: (settings: GameSettings, players: Player[]) => void;
   theme: 'dark' | 'light';
@@ -38,24 +39,7 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
   const selectedUsername = profile?.username ?? player?.name ?? '';
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [questionCount, setQuestionCount] = useState(10);
-  const [players, setPlayers] = useState<Player[]>(() => {
-    if (user && profile) {
-      return [{
-        id: profile.id,
-        name: profile.username || DEFAULT_USERNAME,
-        score: 0,
-        xp: 0,
-        level: 1,
-        color: { bg: '#6366f1', border: '#818cf8', name: 'Violet' },
-        answers: [],
-        streak: 0,
-        maxStreak: 0,
-        status: 'playing',
-        badges: [],
-      }];
-    }
-    return [];
-  });
+  const [players, setPlayers] = useState<Player[]>([]);
   const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
 
@@ -182,13 +166,28 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
   }, []);
 
   const handleStartClick = useCallback(() => {
-    const minNeeded = user ? 1 : 2;
-    if (isMulti && players.length < minNeeded) {
+    // If user is logged in but not yet in the players list, add them automatically
+    if (isMulti && user && profile && players.length === 0) {
+      const userPlayer: Player = {
+        id: profile.id,
+        name: profile.username || DEFAULT_USERNAME,
+        score: 0,
+        xp: 0,
+        level: 1,
+        color: { bg: '#6366f1', border: '#818cf8', name: 'Violet' },
+        answers: [],
+        streak: 0,
+        maxStreak: 0,
+        status: 'playing',
+        badges: [],
+      };
+      setPlayers([userPlayer]);
+    } else if (isMulti && players.length < (user ? 1 : 2)) {
       setShowAddPlayerModal(true);
     } else {
       handleStart();
     }
-  }, [isMulti, players.length, user, handleStart]);
+  }, [isMulti, user, profile, players.length, handleStart]);
 
   if (isLoading) {
     return <LoadingSpinner message="Chargement du profil..." />;
