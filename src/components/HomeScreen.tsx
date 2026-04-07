@@ -178,6 +178,7 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
+                style={{ width: '100%' }}
               >
                 <ModeCard
                   {...mode}

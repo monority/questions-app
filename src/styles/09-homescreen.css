@@ -96,6 +96,11 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
     width: 100%;
+    box-sizing: border-box;
+  }
+
+  .mode-grid > * {
+    width: 100%;
   }
 
   .mode-card {
