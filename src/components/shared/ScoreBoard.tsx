@@ -32,6 +32,9 @@ export function ScoreBoard({ players, currentPlayerId, compact }: ScoreBoardProp
             )}
           </div>
           <span className="player-score">{player.score}</span>
+          {!compact && (
+            <span className="player-total">Total: {player.score}</span>
+          )}
         </div>
       ))}
     </div>
