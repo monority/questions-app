@@ -21,6 +21,12 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setError('');
     setLoading(true);
 
+    if (!isEmailValid(email)) {
+      setLoading(false);
+      setError('Email invalide ou non autorisé');
+      return;
+    }
+
     try {
       if (mode === 'login') {
         await signIn(email, password);
@@ -39,11 +45,34 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }
   }
 
+  const BLOCKED_WORDS = [
+    'pute', 'con', 'connard', 'encul', 'salop', 'merd', 'nul', 'chi', 'pdp',
+    'bite', 'fdp', 'ntm', 'pd', 'tg', 'ntma', 'va', 'cte', 'suce', 'couille',
+    'queue', 'bite', 'chatte', 'teub', 'tub', 'fesse', 'ass', 'nig', 'nigga',
+    'nigger', 'hitler', 'naz', 'kkk', 'racist', 'hitl', 'pedo', 'pedophile',
+    'rape', 'viol', 'spam', 'hack', 'crack', 'terrorist', 'benlad', 'osama'
+  ];
+
   const sanitizeUsername = (input: string): string => {
-    return input
+    const cleaned = input
       .trim()
       .replace(/[<>'"&;]/g, '')
       .slice(0, 20);
+    
+    const lower = cleaned.toLowerCase();
+    for (const word of BLOCKED_WORDS) {
+      if (lower.includes(word)) {
+        return 'Joueur';
+      }
+    }
+    return cleaned;
+  };
+
+  const isEmailValid = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return false;
+    const disposable = ['tempmail', '10minutemail', 'guerrillamail', 'mailinator', 'throwaway', 'yopmail', 'trashmail'];
+    return !disposable.some(d => email.toLowerCase().includes(d));
   };
 
   const passwordRequirements = [
@@ -132,7 +161,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <button 
             type="submit" 
             className="btn-primary" 
-            disabled={loading || (mode === 'register' && !isPasswordValid)}
+            disabled={loading || (mode === 'register' && (!isPasswordValid || !isEmailValid(email)))}
           >
             {loading ? 'Chargement...' : mode === 'login' ? 'Se connecter' : 'S\'inscrire'}
           </button>

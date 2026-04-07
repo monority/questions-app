@@ -95,11 +95,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signUp(email: string, password: string, username: string) {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        throw new Error('Vous avez déjà un compte. Déconnectez-vous d\'abord.');
+      }
       await AUTH_SERVICE.signUp(email, password, username);
       await signIn(email, password);
     } catch (err) {
       console.error('Signup error:', err);
-      throw err;
+      if (err instanceof Error && (err.message.includes('already') || err.message.includes('Déconnectez'))) throw err;
+      throw new Error('Erreur lors de l\'inscription');
     }
   }
 

@@ -95,11 +95,12 @@ export const AUTH_SERVICE = {
   },
 
   async createProfile(userId: string, username: string, email: string) {
+    const safeUsername = this.sanitizeUsername(username) || 'Joueur';
     const { data, error } = await supabase
       .from('profiles')
       .insert({
         id: userId,
-        username,
+        username: safeUsername,
         email,
         total_score: 0,
         games_played: 0,
@@ -141,12 +142,29 @@ export const AUTH_SERVICE = {
     return this.createProfile(userId, username || email.split('@')[0], email);
   },
 
+  sanitizeUsername(input: string): string {
+    const BLOCKED_WORDS = [
+      'pute', 'con', 'connard', 'encul', 'salop', 'merd', 'nul', 'chi', 'pdp',
+      'bite', 'fdp', 'ntm', 'pd', 'tg', 'ntma', 'va', 'cte', 'suce', 'couille',
+      'queue', 'chatte', 'teub', 'tub', 'fesse', 'ass', 'nig', 'nigga',
+      'nigger', 'hitler', 'naz', 'kkk', 'racist', 'pedo', 'pedophile',
+      'rape', 'viol', 'spam', 'hack'
+    ];
+    const cleaned = input.trim().slice(0, 20);
+    const lower = cleaned.toLowerCase();
+    for (const word of BLOCKED_WORDS) {
+      if (lower.includes(word)) return 'Joueur';
+    }
+    return cleaned;
+  },
+
   async submitScore(userId: string, score: number, username: string) {
+    const safeUsername = this.sanitizeUsername(username);
     const { data: leaderboardData, error: leaderboardError } = await supabase
       .from('leaderboard')
       .insert({
         user_id: userId,
-        username,
+        username: safeUsername || 'Joueur',
         score,
       })
       .select();
