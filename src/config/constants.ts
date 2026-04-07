@@ -1,5 +1,7 @@
 import type { PlayerColor } from '../types/game';
 
+export const DEFAULT_USERNAME = 'Joueur';
+
 export const PLAYER_COLORS: PlayerColor[] = [
   { bg: '#FF6B6B', border: '#FF5252', name: 'Rouge' },
   { bg: '#4ECDC4', border: '#26A69A', name: 'Turquoise' },

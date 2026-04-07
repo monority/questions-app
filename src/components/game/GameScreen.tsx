@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useMemo } from 'react';
 import type { Player, Question, GameMode } from '../../types/game';
 import { QuestionDisplay } from '../shared/QuestionDisplay';
 import { AnswerOptions } from '../shared/AnswerOptions';
@@ -38,10 +38,12 @@ export function GameScreen({ players: initialPlayers, mode, questions, onGameEnd
   
   const questionStartTimeRef = useRef<number>(0);
 
-  const isMultiplayerMode = mode === 'party';
-  const isPartyMode = mode === 'party';
-  const modeSettings = MODE_CONFIG[mode] ?? { timePerQuestion: 20, scoreMultiplier: 1, description: '' };
-  const targetQuestionsPerPlayer = questions.length;
+  const { isMultiplayerMode, isPartyMode, modeSettings, targetQuestionsPerPlayer } = useMemo(() => ({
+    isMultiplayerMode: mode === 'party',
+    isPartyMode: mode === 'party',
+    modeSettings: MODE_CONFIG[mode] ?? { timePerQuestion: 20, scoreMultiplier: 1, description: '' },
+    targetQuestionsPerPlayer: questions.length,
+  }), [mode, questions.length]);
 
   const getRandomQuestion = useCallback((exclude: Set<number>): number | null => {
     const available = questions
@@ -206,7 +208,7 @@ export function GameScreen({ players: initialPlayers, mode, questions, onGameEnd
     }
   }, [isPartyMode, isLastPlayer, isLastQuestion, gamePlayers, currentQuestionIndex, usedQuestions, getRandomQuestion, onGameEnd, playerTurnCounts, targetQuestionsPerPlayer, gameState.currentPlayerIndex]);
 
-  const getNextPlayerName = () => {
+  const getNextPlayerName = useCallback(() => {
     if (isPartyMode) {
       const currentPlayerDone = playerTurnCounts[gameState.currentPlayerIndex] >= targetQuestionsPerPlayer;
       const allDone = playerTurnCounts.every(count => count >= targetQuestionsPerPlayer);
@@ -236,7 +238,7 @@ export function GameScreen({ players: initialPlayers, mode, questions, onGameEnd
     }
     const nextIdx = gameState.currentPlayerIndex + 1;
     return nextIdx < gamePlayers.length ? `${gamePlayers[nextIdx].name}` : 'Question suivante';
-  };
+  }, [isPartyMode, isLastPlayer, isLastQuestion, gamePlayers, gameState.currentPlayerIndex, playerTurnCounts, targetQuestionsPerPlayer]);
 
   if (!currentQuestion) return null;
 

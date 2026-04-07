@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import type { GameSettings, GameMode, Player } from '../types/game';
 import { usePlayer } from '../hooks/usePlayer';
@@ -15,7 +15,7 @@ import { ModeCard } from './shared/ModeCard';
 import { PlayerList } from './shared/PlayerList';
 import { CategorySelector } from './shared/CategorySelector';
 import { QuestionCountSelector } from './shared/QuestionCountSelector';
-import { GAME_MODES, isMultiplayerMode, BOT_NAMES, BOT_COLORS } from '../config';
+import { GAME_MODES, isMultiplayerMode, BOT_NAMES, BOT_COLORS, GAME_CONFIG, DEFAULT_USERNAME } from '../config';
 
 interface HomeScreenProps {
   onStartGame: (settings: GameSettings, players: Player[]) => void;
@@ -43,21 +43,31 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
 
   const isMulti = isMultiplayerMode(gameMode);
 
-  if (isLoading) {
-    return <LoadingSpinner message="Chargement du profil..." />;
-  }
+  const createHumanPlayer = useCallback((name: string): Player => ({
+    id: player?.id || crypto.randomUUID(),
+    name,
+    score: 0,
+    xp: player?.xp || 0,
+    level: player?.level || 1,
+    color: player?.color || { bg: '#6366f1', border: '#818cf8', name: 'Violet' },
+    answers: [],
+    streak: 0,
+    maxStreak: player?.maxStreak || 0,
+    status: 'playing',
+    badges: player?.badges || [],
+  }), [player]);
 
-  const getStartButtonText = () => {
+  const getStartButtonText = useMemo(() => {
     if (isMulti) {
       return players.length < 2 
         ? `Ajoutez au moins 2 joueurs (${players.length}/2)` 
         : 'Commencer';
     }
     return 'Commencer';
-  };
+  }, [isMulti, players.length]);
 
-  const handleStart = () => {
-    const finalName = playerName || 'Joueur';
+  const handleStart = useCallback(() => {
+    const finalName = playerName || DEFAULT_USERNAME;
     if (playerName !== player?.name) {
       setPlayerName(finalName);
     }
@@ -84,27 +94,13 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
       type: isMulti ? 'multiplayer' : 'solo',
       playerCount: finalPlayers.length,
       questionsPerRound: questionCount,
-      timePerQuestion: 20,
+      timePerQuestion: GAME_CONFIG.DEFAULT_TIME_PER_QUESTION,
       categories: selectedCategories,
       difficulty: 'all',
     }, finalPlayers);
-  };
+  }, [playerName, player, isMulti, players, onStartGame, gameMode, questionCount, selectedCategories, createHumanPlayer, setPlayerName]);
 
-  const createHumanPlayer = (name: string): Player => ({
-    id: player?.id || crypto.randomUUID(),
-    name,
-    score: 0,
-    xp: player?.xp || 0,
-    level: player?.level || 1,
-    color: player?.color || { bg: '#6366f1', border: '#818cf8', name: 'Violet' },
-    answers: [],
-    streak: 0,
-    maxStreak: player?.maxStreak || 0,
-    status: 'playing',
-    badges: player?.badges || [],
-  });
-
-  const addBot = () => {
+  const addBot = useCallback(() => {
     const newBot: Player = {
       id: crypto.randomUUID(),
       name: BOT_NAMES[players.length] || `Bot ${players.length + 1}`,
@@ -118,40 +114,44 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
       status: 'playing',
       badges: [],
     };
-    setPlayers([...players, newBot]);
-  };
+    setPlayers(prev => [...prev, newBot]);
+  }, [players.length]);
 
-  const removePlayer = (index: number) => {
-    setPlayers(players.filter((_, i) => i !== index));
-  };
+  const removePlayer = useCallback((index: number) => {
+    setPlayers(prev => prev.filter((_, i) => i !== index));
+  }, []);
 
-  const startEditingName = (playerId: string, currentName: string) => {
+  const startEditingName = useCallback((playerId: string, currentName: string) => {
     setEditingPlayerId(playerId);
     setEditingName(currentName);
-  };
+  }, []);
 
-  const saveEditingName = () => {
+  const saveEditingName = useCallback(() => {
     if (editingPlayerId && editingName.trim()) {
-      setPlayers(players.map(p => 
+      setPlayers(prev => prev.map(p => 
         p.id === editingPlayerId ? { ...p, name: editingName.trim() } : p
       ));
     }
     setEditingPlayerId(null);
     setEditingName('');
-  };
+  }, [editingPlayerId, editingName]);
 
-  const cancelEditingName = () => {
+  const cancelEditingName = useCallback(() => {
     setEditingPlayerId(null);
     setEditingName('');
-  };
+  }, []);
 
-  const handleStartClick = () => {
+  const handleStartClick = useCallback(() => {
     if (isMulti && players.length < 2) {
       setShowAddPlayerModal(true);
     } else {
       handleStart();
     }
-  };
+  }, [isMulti, players.length, handleStart]);
+
+  if (isLoading) {
+    return <LoadingSpinner message="Chargement du profil..." />;
+  }
 
   return (
     <div className="home-screen">
@@ -300,7 +300,7 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
         </section>
 
         <button className="btn-primary start-btn-large" onClick={handleStartClick}>
-          <span>{getStartButtonText()}</span>
+          <span>{getStartButtonText}</span>
           <span className="btn-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polygon points="5 3 19 12 5 21 5 3"/>

@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext, type ReactNode } from 'react';
+import { useState, useEffect, createContext, useContext, useCallback, type ReactNode } from 'react';
 import { supabase, AUTH_SERVICE, type UserProfile } from '../services/authService';
 
 interface AuthUser {
@@ -70,16 +70,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  async function loadProfile(userId: string) {
+  const loadProfile = useCallback(async (userId: string) => {
     try {
       const data = await AUTH_SERVICE.getProfile(userId);
       setProfile(data);
     } catch (error) {
       console.error('Error loading profile:', error);
     }
-  }
+  }, []);
 
-  async function signIn(email: string, password: string) {
+  const signIn = useCallback(async (email: string, password: string) => {
     const { user } = await AUTH_SERVICE.signIn(email, password);
     setUser(user as AuthUser);
     
@@ -92,9 +92,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profileData = null;
     }
     setProfile(profileData);
-  }
+  }, []);
 
-  async function signUp(email: string, password: string, username: string) {
+  const signUp = useCallback(async (email: string, password: string, username: string) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
@@ -107,23 +107,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (err instanceof Error && (err.message.includes('already') || err.message.includes('Déconnectez'))) throw err;
       throw new Error('Erreur lors de l\'inscription');
     }
-  }
+  }, [signIn]);
 
-  async function signOut() {
+  const signOut = useCallback(async () => {
     await AUTH_SERVICE.signOut();
     setUser(null);
     setProfile(null);
-  }
+  }, []);
 
-  async function resetPassword(email: string) {
+  const resetPassword = useCallback(async (email: string) => {
     await AUTH_SERVICE.resetPassword(email);
-  }
+  }, []);
 
-  async function refreshProfile() {
+  const refreshProfile = useCallback(async () => {
     if (user) {
       await loadProfile(user.id);
     }
-  }
+  }, [user, loadProfile]);
 
   return (
     <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut, resetPassword, refreshProfile }}>

@@ -1,3 +1,4 @@
+import React from 'react';
 import type { LeaderboardEntry } from '../hooks/useLeaderboard';
 
 interface LeaderboardProps {
@@ -5,15 +6,16 @@ interface LeaderboardProps {
   onClose: () => void;
 }
 
+const MODE_LABELS: Record<string, string> = {
+  solo: 'Solo',
+  party: 'Party',
+};
+
 function getModeLabel(mode: string): string {
-  const modes: Record<string, string> = {
-    solo: 'Solo',
-    party: 'Party',
-  };
-  return modes[mode] || mode;
+  return MODE_LABELS[mode] || mode;
 }
 
-export function Leaderboard({ entries, onClose }: LeaderboardProps) {
+export const Leaderboard = React.memo(function Leaderboard({ entries, onClose }: LeaderboardProps) {
   return (
     <div className="leaderboard-overlay" onClick={onClose}>
       <div className="leaderboard-modal" onClick={e => e.stopPropagation()}>
@@ -59,4 +61,4 @@ export function Leaderboard({ entries, onClose }: LeaderboardProps) {
       </div>
     </div>
   );
-}
+});

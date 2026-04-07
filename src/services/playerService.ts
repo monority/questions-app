@@ -3,6 +3,7 @@ import { GAME_CONFIG, LEVELS, BADGES, DEFAULT_STATS } from '../config';
 import { PLAYER_COLORS } from '../config/constants';
 
 const PROGRESS_STORAGE_KEY = 'quiz_progress';
+const CONTROL_CHARS = /[\x00-\x1F\x7F]/gu;
 
 export const PLAYER_SERVICE = {
   create(name: string, index: number): Player {
@@ -95,7 +96,6 @@ export const PLAYER_SERVICE = {
   },
 
   sanitizeName(name: string): string {
-    const CONTROL_CHARS = /[\x00-\x1F\x7F]/gu;
     return name
       .trim()
       .replace(/[<>\"'&]/g, '')

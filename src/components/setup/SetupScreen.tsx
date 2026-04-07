@@ -4,6 +4,7 @@ import { PlayerSetup } from './PlayerSetup';
 import { ModeSelection } from './ModeSelection';
 import { GameOptions } from './GameOptions';
 import { usePlayers } from '../../hooks';
+import { GAME_CONFIG } from '../../config';
 
 interface SetupScreenProps {
   onStartGame: (settings: GameSettings, players: import('../../types/game').Player[]) => void;
@@ -22,8 +23,8 @@ export function SetupScreen({ onStartGame }: SetupScreenProps) {
       mode,
       type: players.length > 1 ? 'multiplayer' : 'solo',
       playerCount: players.length,
-      questionsPerRound: 10,
-      timePerQuestion: 20,
+      questionsPerRound: GAME_CONFIG.DEFAULT_QUESTION_COUNT,
+      timePerQuestion: GAME_CONFIG.DEFAULT_TIME_PER_QUESTION,
       categories: [],
       difficulty: 'all',
     }, players);

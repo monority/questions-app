@@ -5,6 +5,16 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+const BLOCKED_WORDS = [
+  'pute', 'con', 'connard', 'encul', 'salop', 'merd', 'nul', 'chi', 'pdp',
+  'bite', 'fdp', 'ntm', 'pd', 'tg', 'ntma', 'va', 'cte', 'suce', 'couille',
+  'queue', 'chatte', 'teub', 'tub', 'fesse', 'ass', 'nig', 'nigga',
+  'nigger', 'hitler', 'naz', 'kkk', 'racist', 'pedo', 'pedophile',
+  'rape', 'viol', 'spam', 'hack'
+];
+
+const DEFAULT_USERNAME = 'Joueur';
+
 interface SupabaseProfile {
   id: string;
   email: string;
@@ -103,7 +113,7 @@ export const AUTH_SERVICE = {
   },
 
   async createProfile(userId: string, username: string, email: string) {
-    const safeUsername = this.sanitizeUsername(username) || 'Joueur';
+    const safeUsername = this.sanitizeUsername(username) || DEFAULT_USERNAME;
     const { data, error } = await supabase
       .from('profiles')
       .insert({
@@ -151,17 +161,10 @@ export const AUTH_SERVICE = {
   },
 
   sanitizeUsername(input: string): string {
-    const BLOCKED_WORDS = [
-      'pute', 'con', 'connard', 'encul', 'salop', 'merd', 'nul', 'chi', 'pdp',
-      'bite', 'fdp', 'ntm', 'pd', 'tg', 'ntma', 'va', 'cte', 'suce', 'couille',
-      'queue', 'chatte', 'teub', 'tub', 'fesse', 'ass', 'nig', 'nigga',
-      'nigger', 'hitler', 'naz', 'kkk', 'racist', 'pedo', 'pedophile',
-      'rape', 'viol', 'spam', 'hack'
-    ];
     const cleaned = input.trim().slice(0, 20);
     const lower = cleaned.toLowerCase();
     for (const word of BLOCKED_WORDS) {
-      if (lower.includes(word)) return 'Joueur';
+      if (lower.includes(word)) return DEFAULT_USERNAME;
     }
     return cleaned;
   },
@@ -182,7 +185,7 @@ export const AUTH_SERVICE = {
         .from('leaderboard')
         .upsert({
           user_id: userId,
-          username: safeUsername || 'Joueur',
+          username: safeUsername || DEFAULT_USERNAME,
           score,
         }, {
           onConflict: 'user_id',
