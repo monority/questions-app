@@ -82,15 +82,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { user } = await AUTH_SERVICE.signIn(email, password);
     setUser(user as AuthUser);
     
-    let profileData = await AUTH_SERVICE.getProfile(user.id);
-    if (!profileData) {
-      try {
-        const username = user.user_metadata?.username || user.email?.split('@')[0] || 'Player';
-        profileData = await AUTH_SERVICE.getOrCreateProfile(user.id, user.email || '', username);
-      } catch (err) {
-        console.warn('Profile creation failed:', err);
-        profileData = null;
-      }
+    const username = user.user_metadata?.username || user.email?.split('@')[0] || 'Player';
+    let profileData;
+    try {
+      profileData = await AUTH_SERVICE.getOrCreateProfile(user.id, user.email || '', username);
+    } catch (err) {
+      console.warn('Profile creation failed:', err);
+      profileData = null;
     }
     setProfile(profileData);
   }

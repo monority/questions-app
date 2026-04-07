@@ -26,7 +26,7 @@ interface HomeScreenProps {
 export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProps) {
   const { player, isLoading, setPlayerName } = usePlayer();
   const { user, profile, signOut } = useAuth();
-  const { entries } = useLeaderboard();
+  const { entries, refresh: refreshLeaderboard } = useLeaderboard();
   const search = useUserSearch();
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
@@ -183,7 +183,7 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
           
           <button 
             className="header-btn leaderboard-btn" 
-            onClick={() => setShowLeaderboard(true)}
+            onClick={() => { refreshLeaderboard(); setShowLeaderboard(true); }}
             title="Classement global"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">

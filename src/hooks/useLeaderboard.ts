@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { supabase } from '../services/authService';
 
 export interface LeaderboardEntry {
   id: string;
@@ -14,17 +15,50 @@ const LEADERBOARD_KEY = 'quiz_leaderboard';
 const MAX_ENTRIES = 10;
 
 export function useLeaderboard() {
-  const [entries, setEntries] = useState<LeaderboardEntry[]>(() => {
-    const saved = localStorage.getItem(LEADERBOARD_KEY);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return [];
+  const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadFromSupabase = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('leaderboard')
+        .select('*')
+        .order('score', { ascending: false })
+        .limit(MAX_ENTRIES);
+      
+      if (error) throw error;
+      
+      const entries = (data || []).map((d: { user_id: string; username: string; score: number; created_at: string }) => ({
+        id: d.user_id,
+        name: d.username,
+        score: d.score,
+        xp: 0,
+        level: 1,
+        date: d.created_at,
+        gameMode: 'quiz',
+      }));
+      
+      setEntries(entries);
+      localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(entries));
+    } catch (err) {
+      console.error('Leaderboard error:', err);
+      const saved = localStorage.getItem(LEADERBOARD_KEY);
+      if (saved) {
+        try {
+          setEntries(JSON.parse(saved));
+        } catch {
+          setEntries([]);
+        }
       }
+    } finally {
+      setLoading(false);
     }
-    return [];
-  });
+  };
+
+  useEffect(() => {
+    loadFromSupabase();
+  }, []);
 
   const saveScore = useCallback((entry: Omit<LeaderboardEntry, 'date'>) => {
     const newEntry: LeaderboardEntry = {
@@ -51,5 +85,5 @@ export function useLeaderboard() {
     return rank === -1 ? entries.length + 1 : rank + 1;
   }, [entries]);
 
-  return { entries, saveScore, clearLeaderboard, getRank };
+  return { entries, loading, saveScore, clearLeaderboard, getRank, refresh: loadFromSupabase };
 }

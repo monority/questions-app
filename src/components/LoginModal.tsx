@@ -8,7 +8,7 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ isOpen, onClose }: LoginModalProps) {
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, refreshProfile } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,6 +27,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       } else {
         await signUp(email, password, username);
       }
+      await refreshProfile();
       onClose();
       setEmail('');
       setPassword('');
