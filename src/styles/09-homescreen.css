@@ -12,20 +12,87 @@
   }
 
   .home-header {
-    text-align: center;
-    padding: var(--space-lg) 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
     position: relative;
     width: 100%;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    margin-bottom: var(--space-md);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .header-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.875rem;
+  }
+
+  .header-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+    color: var(--text-primary);
+  }
+
+  .header-btn.login-btn {
+    background: var(--gradient-accent);
+    color: white;
+    border: none;
+    box-shadow: var(--shadow-glow);
+  }
+
+  .header-btn.login-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px var(--color-accent-glow);
+  }
+
+  .user-menu {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .user-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .user-menu .logout-btn {
+    background: var(--bg-card);
   }
 
   .theme-toggle {
-    position: absolute;
-    top: var(--space-xs);
-    right: 0;
-    width: 48px;
-    height: 48px;
+    position: relative;
+    width: 40px;
+    height: 40px;
     background: var(--bg-card);
-    border: none;
+    border: 1px solid var(--border);
     border-radius: var(--radius);
     cursor: pointer;
     display: flex;
@@ -38,12 +105,11 @@
   .theme-toggle:hover {
     background: var(--bg-secondary);
     color: var(--text-primary);
-    box-shadow: var(--shadow-glow);
   }
 
   .theme-toggle svg {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
   }
 
   .home-header h1 {
@@ -61,13 +127,14 @@
   }
 
   .home-header .logo-icon {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 
   .tagline {
     color: var(--text-secondary);
-    font-size: 1rem;
-    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    margin-bottom: var(--space-lg);
+    text-align: center;
   }
 
   .home-content {
