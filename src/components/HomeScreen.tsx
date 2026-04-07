@@ -38,7 +38,24 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
   const [playerName] = useState(() => profile?.username ?? player?.name ?? '');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [questionCount, setQuestionCount] = useState(10);
-  const [players, setPlayers] = useState<Player[]>([]);
+  const [players, setPlayers] = useState<Player[]>(() => {
+    if (profile) {
+      return [{
+        id: profile.id,
+        name: profile.username || 'Joueur',
+        score: 0,
+        xp: 0,
+        level: 1,
+        color: { bg: '#6366f1', border: '#818cf8', name: 'Violet' },
+        answers: [],
+        streak: 0,
+        maxStreak: 0,
+        status: 'playing',
+        badges: [],
+      }];
+    }
+    return [];
+  });
   const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
 
