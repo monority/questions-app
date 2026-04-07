@@ -8,11 +8,7 @@ interface LeaderboardProps {
 function getModeLabel(mode: string): string {
   const modes: Record<string, string> = {
     solo: 'Solo',
-    duel: 'Duel',
-    tournament: 'Tournoi',
     party: 'Party',
-    competitive: 'Compétitif',
-    cooperative: 'Coopératif',
   };
   return modes[mode] || mode;
 }

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type { Player, Question, GameMode } from '../../types/game';
 import { QuestionDisplay } from '../shared/QuestionDisplay';
 import { AnswerOptions } from '../shared/AnswerOptions';
@@ -15,7 +15,7 @@ interface GameScreenProps {
 }
 
 interface GameState {
-  currentQuestionIndex: number;
+  currentQuestionIndex: number | null;
   currentPlayerIndex: number;
   selectedAnswer: string | null;
   showResult: boolean;
@@ -30,83 +30,48 @@ const initialGameState: GameState = {
   isPaused: false,
 };
 
-const isPartyMode = (m: GameMode) => m === 'party';
-
 export function GameScreen({ players: initialPlayers, mode, questions, onGameEnd, onExit }: GameScreenProps) {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
   const [gamePlayers, setGamePlayers] = useState<Player[]>(initialPlayers);
-  const [usedQuestionIndices, setUsedQuestionIndices] = useState<Set<number>>(new Set());
+  const [usedQuestions, setUsedQuestions] = useState<Set<number>>(new Set());
+  const [playerTurnCounts, setPlayerTurnCounts] = useState<number[]>(initialPlayers.map(() => 0));
   
   const questionStartTimeRef = useRef<number>(0);
-  const timeoutRef = useRef<number | null>(null);
-  const prevQuestionIndexRef = useRef<number>(-1);
 
-  const isMultiplayerMode = ['duel', 'party', 'tournament', 'competitive'].includes(mode);
-  const partyMode = isPartyMode(mode);
-  const modeSettings = MODE_CONFIG[mode] || MODE_CONFIG.solo;
+  const isMultiplayerMode = mode === 'party';
+  const isPartyMode = mode === 'party';
+  const modeSettings = MODE_CONFIG[mode] ?? { timePerQuestion: 20, scoreMultiplier: 1, description: '' };
+  const targetQuestionsPerPlayer = questions.length;
 
-  const getNextQuestionIndex = useCallback(() => {
-    const availableIndices = questions
-      .map((_, idx) => idx)
-      .filter(idx => !usedQuestionIndices.has(idx));
+  const getRandomQuestion = useCallback((exclude: Set<number>): number | null => {
+    const available = questions
+      .map((_, i) => i)
+      .filter(i => !exclude.has(i));
     
-    if (availableIndices.length === 0) return 0;
-    
-    const randomIdx = Math.floor(Math.random() * availableIndices.length);
-    return availableIndices[randomIdx];
-  }, [questions, usedQuestionIndices]);
-
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(() => {
-    if (partyMode) {
-      const idx = Math.floor(Math.random() * questions.length);
-      return idx;
+    if (available.length === 0) {
+      return null;
     }
-    return 0;
-  });
+    return available[Math.floor(Math.random() * available.length)];
+  }, [questions]);
 
-  useEffect(() => {
-    if (prevQuestionIndexRef.current !== currentQuestionIndex || partyMode) {
-      prevQuestionIndexRef.current = currentQuestionIndex;
-      questionStartTimeRef.current = Date.now();
-      
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setGameState({
-        currentQuestionIndex: currentQuestionIndex,
-        currentPlayerIndex: 0,
-        selectedAnswer: null,
-        showResult: false,
-        isPaused: false,
-      });
-    }
-  }, [currentQuestionIndex, partyMode]);
-
+  const currentQuestionIndex = gameState.currentQuestionIndex ?? 0;
   const currentQuestion = questions[currentQuestionIndex];
   const currentPlayer = gamePlayers[gameState.currentPlayerIndex];
 
-  const isLastQuestion = partyMode 
-    ? usedQuestionIndices.size >= questions.length - 1
-    : gameState.currentQuestionIndex >= questions.length - 1;
+  const isLastQuestion = (gameState.currentQuestionIndex ?? 0) >= questions.length - 1;
   const isLastPlayer = gameState.currentPlayerIndex >= gamePlayers.length - 1;
+  const currentPlayerTurnCount = playerTurnCounts[gameState.currentPlayerIndex];
 
-  const calculateScore = useCallback((answerTime: number, isCorrect: boolean) => {
+  const calculateScore = useCallback((_answerTime: number, isCorrect: boolean) => {
     if (!isCorrect) return 0;
-    let score = GAME_CONFIG.SCORE_BASE * modeSettings.scoreMultiplier;
-    if (mode === 'competitive' || mode === 'duel') {
-      const timeBonus = Math.max(0, Math.floor((GAME_CONFIG.TIME_BONUS_THRESHOLD - answerTime) / 1000) * GAME_CONFIG.TIME_BONUS_MULTIPLIER);
-      score += timeBonus;
-    }
+    const score = GAME_CONFIG.SCORE_BASE * modeSettings.scoreMultiplier;
     return Math.floor(score);
-  }, [mode, modeSettings.scoreMultiplier]);
+  }, [modeSettings.scoreMultiplier]);
 
   const handleTimeUp = useCallback(() => {
     if (!gameState.showResult) {
       const answerTime = GAME_CONFIG.TIME_BONUS_THRESHOLD;
-      const isCorrect = false;
-      const points = calculateScore(answerTime, isCorrect);
+      const points = calculateScore(answerTime, false);
       
       setGameState(prev => ({
         ...prev,
@@ -157,33 +122,63 @@ export function GameScreen({ players: initialPlayers, mode, questions, onGameEnd
   }, [gameState.selectedAnswer, gameState.showResult, gameState.currentPlayerIndex, currentQuestion, calculateScore]);
 
   const handleNext = useCallback(() => {
-    if (partyMode) {
-      const allQuestionsUsed = usedQuestionIndices.size >= questions.length - 1;
-      const allPlayersDone = isLastPlayer;
+    const newUsedQuestions = new Set(usedQuestions).add(currentQuestionIndex);
+    const currentPlayerIdx = gameState.currentPlayerIndex;
+    const newTurnCounts = [...playerTurnCounts];
+    newTurnCounts[currentPlayerIdx] += 1;
+
+    if (isPartyMode) {
+      const currentPlayerDone = newTurnCounts[currentPlayerIdx] >= targetQuestionsPerPlayer;
       
-      if (allPlayersDone) {
-        if (allQuestionsUsed) {
-          onGameEnd(gamePlayers);
-        } else {
-          const nextIdx = getNextQuestionIndex();
-          setCurrentQuestionIndex(nextIdx);
-          setUsedQuestionIndices(prev => new Set(prev).add(nextIdx));
+      if (currentPlayerDone && newTurnCounts.every((count, idx) => idx === currentPlayerIdx || count >= targetQuestionsPerPlayer)) {
+        onGameEnd(gamePlayers);
+      } else if (currentPlayerDone) {
+        const nextPlayerIdx = newTurnCounts.findIndex((count, idx) => idx !== currentPlayerIdx && count < targetQuestionsPerPlayer);
+        if (nextPlayerIdx !== -1) {
+          const nextIdx = getRandomQuestion(newUsedQuestions);
+          if (nextIdx === null) {
+            onGameEnd(gamePlayers);
+            return;
+          }
+          setUsedQuestions(newUsedQuestions);
+          setPlayerTurnCounts(newTurnCounts);
           setGameState(prev => ({
             ...prev,
-            currentPlayerIndex: 0,
+            currentPlayerIndex: nextPlayerIdx,
+            currentQuestionIndex: nextIdx,
             selectedAnswer: null,
             showResult: false,
             isPaused: false,
           }));
+          questionStartTimeRef.current = Date.now();
+        } else {
+          onGameEnd(gamePlayers);
         }
       } else {
+        const nextIdx = getRandomQuestion(newUsedQuestions);
+        if (nextIdx === null) {
+          onGameEnd(gamePlayers);
+          return;
+        }
+        setUsedQuestions(newUsedQuestions);
+        setPlayerTurnCounts(newTurnCounts);
+        let nextPlayer = currentPlayerIdx + 1;
+        if (nextPlayer >= gamePlayers.length) {
+          nextPlayer = newTurnCounts.findIndex((count) => count < targetQuestionsPerPlayer);
+        }
+        if (nextPlayer === -1) {
+          onGameEnd(gamePlayers);
+          return;
+        }
         setGameState(prev => ({
           ...prev,
-          currentPlayerIndex: prev.currentPlayerIndex + 1,
+          currentPlayerIndex: nextPlayer,
+          currentQuestionIndex: nextIdx,
           selectedAnswer: null,
           showResult: false,
           isPaused: false,
         }));
+        questionStartTimeRef.current = Date.now();
       }
     } else {
       if (isLastPlayer) {
@@ -192,7 +187,7 @@ export function GameScreen({ players: initialPlayers, mode, questions, onGameEnd
         } else {
           setGameState(prev => ({
             ...prev,
-            currentQuestionIndex: prev.currentQuestionIndex + 1,
+            currentQuestionIndex: (prev.currentQuestionIndex ?? 0) + 1,
             currentPlayerIndex: 0,
             selectedAnswer: null,
             showResult: false,
@@ -209,26 +204,38 @@ export function GameScreen({ players: initialPlayers, mode, questions, onGameEnd
         }));
       }
     }
-  }, [partyMode, isLastPlayer, isLastQuestion, gamePlayers, questions.length, usedQuestionIndices.size, getNextQuestionIndex, onGameEnd]);
+  }, [isPartyMode, isLastPlayer, isLastQuestion, gamePlayers, currentQuestionIndex, usedQuestions, getRandomQuestion, onGameEnd, playerTurnCounts, targetQuestionsPerPlayer, gameState.currentPlayerIndex]);
 
   const getNextPlayerName = () => {
-    if (partyMode) {
-      const allQuestionsUsed = usedQuestionIndices.size >= questions.length - 1;
-      const allPlayersDone = isLastPlayer;
+    if (isPartyMode) {
+      const currentPlayerDone = playerTurnCounts[gameState.currentPlayerIndex] >= targetQuestionsPerPlayer;
+      const allDone = playerTurnCounts.every(count => count >= targetQuestionsPerPlayer);
       
-      if (allPlayersDone) {
-        if (allQuestionsUsed) {
-          return 'Fin de la partie';
+      if (allDone) {
+        return 'Fin de la partie';
+      }
+      if (currentPlayerDone) {
+        const nextIdx = playerTurnCounts.findIndex((count) => count < targetQuestionsPerPlayer);
+        if (nextIdx !== -1 && nextIdx < gamePlayers.length) {
+          return `${gamePlayers[nextIdx].name}`;
         }
         return 'Question suivante';
       }
-      return `${gamePlayers[gameState.currentPlayerIndex + 1].name}`;
+      let nextIdx = gameState.currentPlayerIndex + 1;
+      if (nextIdx >= gamePlayers.length) {
+        nextIdx = playerTurnCounts.findIndex((count) => count < targetQuestionsPerPlayer);
+      }
+      if (nextIdx !== -1 && nextIdx < gamePlayers.length) {
+        return `${gamePlayers[nextIdx].name}`;
+      }
+      return 'Question suivante';
     }
     
     if (isLastPlayer) {
       return isLastQuestion ? 'Fin de la partie' : 'Question suivante';
     }
-    return `${gamePlayers[gameState.currentPlayerIndex + 1].name}`;
+    const nextIdx = gameState.currentPlayerIndex + 1;
+    return nextIdx < gamePlayers.length ? `${gamePlayers[nextIdx].name}` : 'Question suivante';
   };
 
   if (!currentQuestion) return null;
@@ -238,8 +245,8 @@ export function GameScreen({ players: initialPlayers, mode, questions, onGameEnd
       <GameHeader
         onExit={onExit}
         players={gamePlayers}
-        currentIndex={gameState.currentQuestionIndex}
-        totalQuestions={questions.length}
+        currentIndex={isPartyMode ? currentPlayerTurnCount : currentQuestionIndex}
+        totalQuestions={isPartyMode ? targetQuestionsPerPlayer : questions.length}
       />
       
       <main className="game-content">
@@ -248,9 +255,9 @@ export function GameScreen({ players: initialPlayers, mode, questions, onGameEnd
             <span className="turn-player" style={{ color: currentPlayer?.color?.bg }}>
               {currentPlayer?.name}
             </span>
-            {partyMode ? (
+            {isPartyMode ? (
               <span className="turn-info">
-                Question {usedQuestionIndices.size + 1}/{questions.length}
+                Question {currentPlayerTurnCount + 1}/{targetQuestionsPerPlayer} - {currentPlayer?.name}
               </span>
             ) : (
               <span className="turn-info">
@@ -262,14 +269,14 @@ export function GameScreen({ players: initialPlayers, mode, questions, onGameEnd
 
         <QuestionDisplay
           question={currentQuestion}
-          questionNumber={partyMode ? usedQuestionIndices.size + 1 : gameState.currentQuestionIndex + 1}
-          totalQuestions={questions.length}
+          questionNumber={isPartyMode ? (currentPlayerTurnCount + 1) : (gameState.currentQuestionIndex ?? 0) + 1}
+          totalQuestions={isPartyMode ? targetQuestionsPerPlayer : questions.length}
         />
 
         {!isMultiplayerMode || gamePlayers.length === 1 ? (
           <>
             <Timer
-              key={`${currentQuestionIndex}-${gameState.currentPlayerIndex}`}
+              timerKey={`${currentQuestionIndex}-${gameState.currentPlayerIndex}`}
               duration={modeSettings.timePerQuestion}
               onTimeUp={handleTimeUp}
               isPaused={gameState.isPaused}
@@ -293,7 +300,7 @@ export function GameScreen({ players: initialPlayers, mode, questions, onGameEnd
             </div>
 
             <Timer
-              key={`${currentQuestionIndex}-${gameState.currentPlayerIndex}`}
+              timerKey={`${currentQuestionIndex}-${gameState.currentPlayerIndex}`}
               duration={modeSettings.timePerQuestion}
               onTimeUp={handleTimeUp}
               isPaused={gameState.isPaused}

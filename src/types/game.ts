@@ -1,4 +1,4 @@
-export type GameMode = 'solo' | 'duel' | 'tournament' | 'party' | 'competitive' | 'cooperative';
+export type GameMode = 'solo' | 'party';
 
 export type GameType = 'solo' | 'multiplayer';
 

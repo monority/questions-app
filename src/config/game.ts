@@ -14,13 +14,9 @@ export const GAME_CONFIG = {
   PLAYERS_PER_SCREEN: 4,
 } as const;
 
-export const MODE_CONFIG: Record<GameMode, { timePerQuestion: number; scoreMultiplier: number; description: string }> = {
+export const MODE_CONFIG: Partial<Record<GameMode, { timePerQuestion: number; scoreMultiplier: number; description: string }>> = {
   solo: { timePerQuestion: 20, scoreMultiplier: 1, description: 'Modo normal' },
-  duel: { timePerQuestion: 15, scoreMultiplier: 1.5, description: 'Rapide et intensif' },
-  tournament: { timePerQuestion: 25, scoreMultiplier: 1.2, description: 'Plus de temps pour réfléchir' },
   party: { timePerQuestion: 20, scoreMultiplier: 1, description: 'Pour plusieurs joueurs' },
-  competitive: { timePerQuestion: 15, scoreMultiplier: 2, description: 'Classement basé sur le temps' },
-  cooperative: { timePerQuestion: 30, scoreMultiplier: 0.8, description: 'Temps supplémentaire pour cooperer' },
 };
 
 export const API_CONFIG = {

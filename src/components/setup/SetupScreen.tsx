@@ -10,7 +10,7 @@ interface SetupScreenProps {
 }
 
 export function SetupScreen({ onStartGame }: SetupScreenProps) {
-  const [mode, setMode] = useState<GameMode>('competitive');
+  const [mode, setMode] = useState<GameMode>('solo');
   const [isLoading, setIsLoading] = useState(false);
   const { players, addPlayer, removePlayer, updatePlayer, canStart } = usePlayers();
 

@@ -46,13 +46,15 @@ export function AnswerOptions({
   };
 
   return (
-    <div className="answer-options">
+    <div className="answer-options" role="group" aria-label="Options de réponse">
       {options.map((option, index) => (
         <button
           key={index}
           className={getOptionClass(option)}
           onClick={() => handleClick(option)}
           disabled={disabled}
+          aria-label={`Option ${String.fromCharCode(65 + index)}: ${option}${showResult ? (option === correctAnswer ? ' - Correct' : option === selectedAnswer ? ' - Incorrect' : '') : ''}`}
+          aria-pressed={selectedAnswer === option && !showResult}
         >
           <span className="option-letter">
             {String.fromCharCode(65 + index)}

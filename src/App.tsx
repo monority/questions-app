@@ -67,7 +67,7 @@ function App() {
         <div className="app game-screen-wrapper">
           <GameScreen
             players={game.players}
-            mode={game.settings?.mode ?? 'competitive'}
+            mode={game.settings?.mode ?? 'solo'}
             questions={game.questions}
             onGameEnd={handleGameEnd}
             onExit={game.resetGame}

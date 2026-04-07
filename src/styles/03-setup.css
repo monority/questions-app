@@ -110,12 +110,12 @@
     margin-bottom: 1rem;
   }
 
-  .mode-icon.competitive {
-    background: var(--gradient-warning);
+  .mode-icon.solo {
+    background: var(--gradient-primary);
   }
 
-  .mode-icon.cooperative {
-    background: var(--gradient-success);
+  .mode-icon.party {
+    background: var(--gradient-accent);
   }
 
   .mode-icon svg {

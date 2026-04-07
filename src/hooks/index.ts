@@ -1,4 +1,3 @@
-export { useTimer } from './useTimer';
 export { useGame } from './useGame';
 export { usePlayers } from './usePlayers';
 export { usePlayer } from './usePlayer';

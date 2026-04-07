@@ -12,37 +12,40 @@ export function ModeSelection({ mode, onModeChange }: ModeSelectionProps) {
       
       <div className="mode-cards">
         <button
-          className={`mode-card ${mode === 'competitive' ? 'selected' : ''}`}
-          onClick={() => onModeChange('competitive')}
+          className={`mode-card ${mode === 'solo' ? 'selected' : ''}`}
+          onClick={() => onModeChange('solo')}
         >
-          <div className="mode-icon competitive">
+          <div className="mode-icon solo">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 16v-4"/>
+              <path d="M12 8h.01"/>
             </svg>
           </div>
-          <h3>Compétitif</h3>
-          <p>Le premier à répondre gagne des points bonus</p>
+          <h3>Solo</h3>
+          <p>Testez vos connaissances</p>
           <div className="mode-features">
             <span>+10 pts bonne réponse</span>
-            <span>+5 pts réponse rapide</span>
           </div>
         </button>
 
         <button
-          className={`mode-card ${mode === 'cooperative' ? 'selected' : ''}`}
-          onClick={() => onModeChange('cooperative')}
+          className={`mode-card ${mode === 'party' ? 'selected' : ''}`}
+          onClick={() => onModeChange('party')}
         >
-          <div className="mode-icon cooperative">
+          <div className="mode-icon party">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" />
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
           </div>
-          <h3>Coopératif</h3>
-          <p>Tout le monde répond, comparez vos réponses</p>
+          <h3>Party</h3>
+          <p>Plusieurs joueurs</p>
           <div className="mode-features">
             <span>+10 pts bonne réponse</span>
-            <span>Pas de pénalité</span>
+            <span>Question différente par joueur</span>
           </div>
         </button>
       </div>

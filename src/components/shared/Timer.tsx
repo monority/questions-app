@@ -4,10 +4,10 @@ interface TimerProps {
   duration: number;
   onTimeUp: () => void;
   isPaused: boolean;
-  key?: string | number;
+  timerKey?: string | number;
 }
 
-export const Timer = memo(function Timer({ duration, onTimeUp, isPaused, key }: TimerProps) {
+export const Timer = memo(function Timer({ duration, onTimeUp, isPaused, timerKey }: TimerProps) {
   const [timeLeft, setTimeLeft] = useState(duration);
   const rafRef = useRef<number | null>(null);
   const endTimeRef = useRef<number>(0);
@@ -54,7 +54,7 @@ export const Timer = memo(function Timer({ duration, onTimeUp, isPaused, key }: 
         rafRef.current = null;
       }
     };
-  }, [isPaused, key]);
+  }, [isPaused, timerKey]);
 
   useEffect(() => {
     setTimeLeft(duration);
@@ -64,8 +64,8 @@ export const Timer = memo(function Timer({ duration, onTimeUp, isPaused, key }: 
   const isLow = timeLeft <= 5;
 
   return (
-    <div className={`timer ${isLow ? 'low' : ''}`}>
-      <div className="timer-bar">
+    <div className={`timer ${isLow ? 'low' : ''}`} role="timer" aria-label={`Temps restant: ${timeLeft} secondes`} aria-live="polite">
+      <div className="timer-bar" role="progressbar" aria-valuenow={timeLeft} aria-valuemin={0} aria-valuemax={duration}>
         <div
           className="timer-progress"
           style={{ width: `${progress}%` }}

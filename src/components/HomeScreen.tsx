@@ -212,11 +212,7 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
               </button>
             </div>
             <p className="player-hint">
-              {gameMode === 'duel' && 'Défiez jusqu\'à 5 bots en mode compétitif!'}
               {gameMode === 'party' && 'Partagez votre écran pour jouer ensemble!'}
-              {gameMode === 'tournament' && 'Affrontez jusqu\'à 6 joueurs en élimination!'}
-              {gameMode === 'competitive' && 'Le plus rapide marque plus de points!'}
-              {gameMode === 'cooperative' && 'Tous les joueurs répondent à tour de rôle'}
             </p>
           </section>
         )}

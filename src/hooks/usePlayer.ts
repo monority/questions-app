@@ -68,14 +68,18 @@ export function usePlayer(): UsePlayerReturn {
     let totalXp = player.xp;
     let maxStreak = player.maxStreak;
     let currentStreak = 0;
+    let totalCorrect = 0;
+    let perfectGame = true;
 
     answers.forEach(answer => {
       if (answer.correct) {
         currentStreak++;
+        totalCorrect++;
         totalXp += Math.floor(answer.points * 0.5) + 10;
         if (currentStreak > maxStreak) maxStreak = currentStreak;
       } else {
         currentStreak = 0;
+        perfectGame = false;
       }
     });
 
@@ -102,12 +106,52 @@ export function usePlayer(): UsePlayerReturn {
       });
     }
 
+    if (maxStreak >= 10 && !player.badges.some(b => b.id === 'streak_10')) {
+      earnedBadges.push({ 
+        id: 'streak_10', 
+        name: 'Série de 10', 
+        icon: '💥', 
+        description: '10 réponses correctes de suite', 
+        earnedAt: new Date() 
+      });
+    }
+
     if (answers.some(a => a.correct && a.timeMs < 3000) && !player.badges.some(b => b.id === 'speed_demon')) {
       earnedBadges.push({ 
         id: 'speed_demon', 
         name: 'Réponse éclair', 
         icon: '⚡', 
         description: 'Réponse correcte en moins de 3 secondes', 
+        earnedAt: new Date() 
+      });
+    }
+
+    if (totalCorrect >= 10 && !player.badges.some(b => b.id === 'perfect_10')) {
+      earnedBadges.push({ 
+        id: 'perfect_10', 
+        name: 'Série parfaite', 
+        icon: '✨', 
+        description: '10 réponses correctes en une partie', 
+        earnedAt: new Date() 
+      });
+    }
+
+    if (perfectGame && answers.length >= 5 && !player.badges.some(b => b.id === 'perfect_game')) {
+      earnedBadges.push({ 
+        id: 'perfect_game', 
+        name: 'Sans faute', 
+        icon: '🎯', 
+        description: 'Partie parfaite sans aucune erreur', 
+        earnedAt: new Date() 
+      });
+    }
+
+    if (player.xp >= 500 && totalXp >= 1000 && !player.badges.some(b => b.id === 'xp_1000')) {
+      earnedBadges.push({ 
+        id: 'xp_1000', 
+        name: 'Millnaire', 
+        icon: '🏆', 
+        description: 'Accumuler 1000 XP au total', 
         earnedAt: new Date() 
       });
     }
