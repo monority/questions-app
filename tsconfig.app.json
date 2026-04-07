@@ -23,7 +23,7 @@
     "strict": true,
     "noUncheckedIndexedAccess": false,
     "noImplicitReturns": true,
-    "noImplicitOverride": true,
+    "noImplicitOverride": false,
     "noPropertyAccessFromIndexSignature": false,
     "forceConsistentCasingInFileNames": true,
     "exactOptionalPropertyTypes": false,

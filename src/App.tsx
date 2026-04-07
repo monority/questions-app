@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useGame } from './hooks';
 import { usePlayer } from './hooks/usePlayer';
 import { useTheme } from './hooks/useTheme';
@@ -6,6 +6,7 @@ import { useAuth } from './hooks/useAuth';
 import { useToast } from './hooks/useToast';
 import { AUTH_SERVICE } from './services/authService';
 import type { Player } from './types/game';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 const HomeScreen = lazy(() => import('./components/HomeScreen').then(m => ({ default: m.HomeScreen })));
 const GameScreen = lazy(() => import('./components/game/GameScreen').then(m => ({ default: m.GameScreen })));
@@ -37,6 +38,7 @@ function App() {
   const { theme, toggleTheme } = useTheme();
   const { user, profile, refreshProfile } = useAuth();
   const { showToast } = useToast();
+  const [isSubmittingScore, setIsSubmittingScore] = useState(false);
   
   const handleGameEnd = async (players: Player[]) => {
     const mainPlayer = players[0];
@@ -47,12 +49,15 @@ function App() {
         points: a.points,
       })));
       
-      if (user && profile) {
+      if (user && profile && !isSubmittingScore) {
+        setIsSubmittingScore(true);
         try {
           await AUTH_SERVICE.submitScore(user.id, mainPlayer.score, profile.username);
           await refreshProfile();
         } catch (err) {
           console.error('Failed to submit score:', err);
+        } finally {
+          setIsSubmittingScore(false);
         }
       }
       
@@ -118,9 +123,11 @@ function App() {
   };
 
   return (
-    <div className="app">
-      {getScreen()}
-    </div>
+    <ErrorBoundary>
+      <div className="app">
+        {getScreen()}
+      </div>
+    </ErrorBoundary>
   );
 }
 

@@ -172,21 +172,42 @@ export const AUTH_SERVICE = {
   async submitScore(userId: string, score: number, username: string) {
     const safeUsername = this.sanitizeUsername(username);
     
+    const { data: currentProfile, error: fetchError } = await supabase
+      .from('profiles')
+      .select('total_score, games_played, best_score')
+      .eq('id', userId)
+      .single();
+    
+    if (fetchError) throw fetchError;
+
+    const newTotalScore = (currentProfile?.total_score || 0) + score;
+    const newGamesPlayed = (currentProfile?.games_played || 0) + 1;
+    const newBestScore = Math.max(currentProfile?.best_score || 0, score);
+
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({
+        total_score: newTotalScore,
+        games_played: newGamesPlayed,
+        best_score: newBestScore,
+      })
+      .eq('id', userId);
+
+    if (updateError) throw updateError;
+
     const { data: existing } = await supabase
       .from('leaderboard')
       .select('score')
       .eq('user_id', userId)
       .single();
     
-    if (existing && score <= existing.score) {
-      // Pas besoin d'updater si le nouveau score est inférieur
-    } else {
+    if (!existing || newBestScore > existing.score) {
       const { error: upsertError } = await supabase
         .from('leaderboard')
         .upsert({
           user_id: userId,
           username: safeUsername || DEFAULT_USERNAME,
-          score,
+          score: newBestScore,
         }, {
           onConflict: 'user_id',
           ignoreDuplicates: false,
@@ -195,30 +216,11 @@ export const AUTH_SERVICE = {
       if (upsertError) throw upsertError;
     }
 
-    const { data: currentProfile, error: profileError } = await supabase
+    const { data: updatedProfile } = await supabase
       .from('profiles')
-      .select('total_score, games_played, best_score')
-      .eq('id', userId)
-      .single();
-    
-    if (profileError) throw profileError;
-
-    const newTotalScore = (currentProfile?.total_score || 0) + score;
-    const newGamesPlayed = (currentProfile?.games_played || 0) + 1;
-    const newBestScore = Math.max(currentProfile?.best_score || 0, score);
-
-    const { data: updatedProfile, error: updateError } = await supabase
-      .from('profiles')
-      .update({
-        total_score: newTotalScore,
-        games_played: newGamesPlayed,
-        best_score: newBestScore,
-      })
-      .eq('id', userId)
       .select()
+      .eq('id', userId)
       .single();
-
-    if (updateError) throw updateError;
 
     return { 
       leaderboard: null, 

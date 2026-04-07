@@ -1,14 +1,11 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import type { GameSettings, GameMode, Player } from '../types/game';
 import { usePlayer } from '../hooks/usePlayer';
 import { useLeaderboard } from '../hooks/useLeaderboard';
 import { useAuth } from '../hooks/useAuth';
 import { useUserSearch } from '../hooks/useGlobalLeaderboard';
-import { Leaderboard } from './Leaderboard';
 import { AddPlayerModal } from './AddPlayerModal';
-import { LoginModal } from './LoginModal';
-import { UserSearch } from './UserSearch';
 import { ProfileModal } from './ProfileModal';
 import { LoadingSpinner } from './shared/LoadingSpinner';
 import { ModeCard } from './shared/ModeCard';
@@ -16,6 +13,10 @@ import { PlayerList } from './shared/PlayerList';
 import { CategorySelector } from './shared/CategorySelector';
 import { QuestionCountSelector } from './shared/QuestionCountSelector';
 import { GAME_MODES, isMultiplayerMode, BOT_NAMES, BOT_COLORS, GAME_CONFIG, DEFAULT_USERNAME } from '../config';
+
+const Leaderboard = lazy(() => import('./Leaderboard').then(m => ({ default: m.Leaderboard })));
+const LoginModal = lazy(() => import('./LoginModal').then(m => ({ default: m.LoginModal })));
+const UserSearch = lazy(() => import('./UserSearch').then(m => ({ default: m.UserSearch })));
 
 interface HomeScreenProps {
   onStartGame: (settings: GameSettings, players: Player[]) => void;
@@ -318,7 +319,9 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
       </footer>
 
       {showLeaderboard && (
-        <Leaderboard entries={entries} onClose={() => setShowLeaderboard(false)} />
+        <Suspense fallback={<LoadingSpinner message="Chargement..." />}>
+          <Leaderboard entries={entries} onClose={() => setShowLeaderboard(false)} />
+        </Suspense>
       )}
 
       <AddPlayerModal
@@ -342,23 +345,29 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
         }}
       />
 
-      <LoginModal 
-          isOpen={showLoginModal} 
-          onClose={() => {
-            setShowLoginModal(false);
-          }} 
-        />
+      {showLoginModal && (
+        <Suspense fallback={<LoadingSpinner message="Chargement..." />}>
+          <LoginModal 
+            isOpen={showLoginModal} 
+            onClose={() => {
+              setShowLoginModal(false);
+            }} 
+          />
+        </Suspense>
+      )}
 
       {showUserSearch && (
-        <UserSearch 
-          query={search.query}
-          setQuery={search.setQuery}
-          results={search.results}
-          loading={search.loading}
-          selectedUser={search.selectedUser}
-          onSelectUser={(user) => search.setSelectedUser(user)}
-          onClose={() => setShowUserSearch(false)}
-        />
+        <Suspense fallback={<LoadingSpinner message="Chargement..." />}>
+          <UserSearch 
+            query={search.query}
+            setQuery={search.setQuery}
+            results={search.results}
+            loading={search.loading}
+            selectedUser={search.selectedUser}
+            onSelectUser={(user) => search.setSelectedUser(user)}
+            onClose={() => setShowUserSearch(false)}
+          />
+        </Suspense>
       )}
 
       {showProfileModal && profile && (
