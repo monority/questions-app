@@ -32,8 +32,9 @@ describe('PLAYER_SERVICE', () => {
       expect(PLAYER_SERVICE.isValidName('   ')).toBe(false);
     });
 
-    it('should return false for names > 20 chars', () => {
-      expect(PLAYER_SERVICE.isValidName('A'.repeat(21))).toBe(false);
+    it('should sanitize and truncate long names', () => {
+      const longName = PLAYER_SERVICE.sanitizeName('A'.repeat(30));
+      expect(longName.length).toBe(20);
     });
   });
 

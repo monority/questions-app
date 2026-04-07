@@ -8,7 +8,7 @@ export const PLAYER_SERVICE = {
   create(name: string, index: number): Player {
     return {
       id: PLAYER_SERVICE.generateId(),
-      name: name.trim(),
+      name: PLAYER_SERVICE.sanitizeName(name),
       score: 0,
       xp: 0,
       level: 1,
@@ -94,8 +94,17 @@ export const PLAYER_SERVICE = {
     return sorted[0] ?? null;
   },
 
+  sanitizeName(name: string): string {
+    return name
+      .trim()
+      .replace(/[<>\"'&]/g, '')
+      .replace(/[\x00-\x1F\x7F]/g, '')
+      .slice(0, 20);
+  },
+
   isValidName(name: string): boolean {
-    return name.trim().length > 0 && name.trim().length <= 20;
+    const sanitized = this.sanitizeName(name);
+    return sanitized.length > 0;
   },
 
   canAddPlayer(currentCount: number): boolean {
@@ -151,14 +160,43 @@ export const PLAYER_SERVICE = {
     };
   },
 
+  validateProgress(data: unknown): { xp: number; level: number; badges: Badge[] } | null {
+    if (typeof data !== 'object' || data === null) return null;
+    const obj = data as Record<string, unknown>;
+    const xp = typeof obj.xp === 'number' ? Math.max(0, Math.floor(obj.xp)) : 0;
+    const level = typeof obj.level === 'number' ? Math.max(1, Math.min(10, Math.floor(obj.level))) : 1;
+    const badges = Array.isArray(obj.badges) ? obj.badges.filter((b): b is Badge => 
+      typeof b === 'object' && b !== null && 
+      typeof b.id === 'string' && typeof b.name === 'string'
+    ) : [];
+    return { xp, level, badges };
+  },
+
   saveProgress(playerId: string, progress: { xp: number; level: number; badges: Badge[] }): void {
     try {
+      const validated = this.validateProgress(progress);
+      if (!validated) return;
       const stored = localStorage.getItem(PROGRESS_STORAGE_KEY);
-      const allProgress = stored ? JSON.parse(stored) : {};
-      allProgress[playerId] = progress;
+      const allProgress = stored ? this.validateStoredData(stored) : {};
+      allProgress[playerId] = validated;
       localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(allProgress));
     } catch (e) {
       console.error('Failed to save progress:', e);
+    }
+  },
+
+  validateStoredData(data: string): Record<string, { xp: number; level: number; badges: Badge[] }> {
+    try {
+      const parsed = JSON.parse(data);
+      if (typeof parsed !== 'object' || parsed === null) return {};
+      const result: Record<string, { xp: number; level: number; badges: Badge[] }> = {};
+      for (const [key, value] of Object.entries(parsed)) {
+        const validated = this.validateProgress(value);
+        if (validated) result[key] = validated;
+      }
+      return result;
+    } catch {
+      return {};
     }
   },
 
@@ -166,7 +204,7 @@ export const PLAYER_SERVICE = {
     try {
       const stored = localStorage.getItem(PROGRESS_STORAGE_KEY);
       if (stored) {
-        const allProgress = JSON.parse(stored);
+        const allProgress = this.validateStoredData(stored);
         return allProgress[playerId] || null;
       }
     } catch (e) {
