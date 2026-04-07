@@ -422,6 +422,55 @@
     margin-top: 0.75rem;
   }
 
+  .login-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--gradient-accent);
+    border: none;
+    border-radius: var(--radius);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: var(--transition);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .login-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px var(--color-accent-glow);
+  }
+
+  .logout-btn {
+    padding: 0.5rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: var(--transition);
+  }
+
+  .logout-btn:hover {
+    border-color: var(--color-error);
+    color: var(--color-error);
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0.5rem;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
   @media (max-width: 480px) {
     .mode-grid {
       grid-template-columns: 1fr;

@@ -3,8 +3,10 @@ import { motion } from 'framer-motion';
 import type { GameSettings, GameMode, Player } from '../types/game';
 import { usePlayer } from '../hooks/usePlayer';
 import { useLeaderboard } from '../hooks/useLeaderboard';
+import { useAuth } from '../hooks/useAuth';
 import { Leaderboard } from './Leaderboard';
 import { AddPlayerModal } from './AddPlayerModal';
+import { LoginModal } from './LoginModal';
 import { LoadingSpinner } from './shared/LoadingSpinner';
 import { ModeCard } from './shared/ModeCard';
 import { PlayerList } from './shared/PlayerList';
@@ -20,9 +22,11 @@ interface HomeScreenProps {
 
 export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProps) {
   const { player, isLoading, setPlayerName, getLevelInfo, getBadges } = usePlayer();
+  const { user, profile, signOut } = useAuth();
   const { entries } = useLeaderboard();
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [gameMode, setGameMode] = useState<GameMode>('solo');
   const [playerName, setPlayerNameInput] = useState(() => player?.name ?? '');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -290,6 +294,17 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
       </main>
 
       <footer className="home-footer">
+        {user ? (
+          <div className="user-info">
+            <span>Connecté: {profile?.username || user.email}</span>
+            <button onClick={signOut} className="logout-btn">Déconnexion</button>
+          </div>
+        ) : (
+          <button className="login-btn" onClick={() => setShowLoginModal(true)}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+            Connexion
+          </button>
+        )}
         <div className="stats-preview">
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> 2250+ questions</span>
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> 8 badges</span>
@@ -325,6 +340,8 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
           setPlayers([...players, newPlayer]);
         }}
       />
+
+      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </div>
   );
 }
