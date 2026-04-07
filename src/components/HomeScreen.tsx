@@ -94,29 +94,27 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
     let finalPlayers: Player[];
 
     if (isMulti) {
-      const connectedPlayer = user && profile ? {
-        id: profile.id,
-        name: profile.username || DEFAULT_USERNAME,
-        score: 0,
-        xp: player?.xp || 0,
-        level: player?.level || 1,
-        color: player?.color || { bg: '#6366f1', border: '#818cf8', name: 'Violet' },
-        answers: [],
-        streak: 0,
-        maxStreak: player?.maxStreak || 0,
-        status: 'playing' as const,
-        badges: player?.badges || [],
-      } : null;
-
       const addedPlayers = players.map((p) => ({
         ...p,
         id: p.id || crypto.randomUUID(),
       }));
-      
-      if (connectedPlayer && addedPlayers.length > 0) {
-        finalPlayers = [connectedPlayer, ...addedPlayers];
-      } else if (connectedPlayer) {
-        finalPlayers = [connectedPlayer];
+
+      if (user && profile && addedPlayers.length === 0) {
+        finalPlayers = [{
+          id: profile.id,
+          name: profile.username || DEFAULT_USERNAME,
+          score: 0,
+          xp: player?.xp || 0,
+          level: player?.level || 1,
+          color: player?.color || { bg: '#6366f1', border: '#818cf8', name: 'Violet' },
+          answers: [],
+          streak: 0,
+          maxStreak: player?.maxStreak || 0,
+          status: 'playing' as const,
+          badges: player?.badges || [],
+        }];
+      } else if (user && profile && addedPlayers.length > 0) {
+        finalPlayers = addedPlayers;
       } else {
         finalPlayers = addedPlayers;
       }
