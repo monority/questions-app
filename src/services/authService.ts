@@ -56,7 +56,7 @@ export const AUTH_SERVICE = {
     
     if (error) throw error;
     if (data?.user) {
-      await this.createProfile(data.user.id, username, email);
+      await this.getOrCreateProfile(data.user.id, email, username);
     }
     return data;
   },
