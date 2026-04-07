@@ -35,7 +35,7 @@ function App() {
   const game = useGame();
   const { updateStats } = usePlayer();
   const { theme, toggleTheme } = useTheme();
-  const { user, profile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const { showToast } = useToast();
   
   const handleGameEnd = async (players: Player[]) => {
@@ -50,6 +50,7 @@ function App() {
       if (user && profile) {
         try {
           await AUTH_SERVICE.submitScore(user.id, mainPlayer.score, profile.username);
+          await refreshProfile();
         } catch (err) {
           console.error('Failed to submit score:', err);
         }
