@@ -55,11 +55,5 @@ export function AnimatedListItem({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const useAnimatedTransition = (isVisible: boolean) => {
-  return {
-    initial: { opacity: 0, scale: 0.9 },
-    animate: isVisible ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 },
-    exit: { opacity: 0, scale: 0.9 },
-    transition: { duration: 0.2 },
-  };
-};
+// Function removed to comply with fast refresh requirements
+// It has been moved to useAnimationsUtils.ts

@@ -138,7 +138,7 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
       categories: selectedCategories,
       difficulty: 'all',
     }, finalPlayers);
-  }, [selectedUsername, player, isMulti, players, onStartGame, gameMode, questionCount, selectedCategories, createHumanPlayer, setPlayerName]);
+  }, [selectedUsername, player, isMulti, players, onStartGame, gameMode, questionCount, selectedCategories, createHumanPlayer, setPlayerName, user, profile]);
 
   const addBot = useCallback(() => {
     const newBot: Player = {
