@@ -21,6 +21,13 @@ const PLAYER_AVATARS = ['🎮', '🎯', '🏆', '⭐', '🔥', '⚡', '🎲', '�
 
 const RANDOM_NAMES = ['Phoenix', 'Shadow', 'Storm', 'Viper', 'Ghost', 'Blaze', 'Ice', 'Thunder', 'Raven', 'Wolf', 'Tiger', 'Dragon'];
 
+const sanitizeName = (input: string): string => {
+    return input
+      .trim()
+      .replace(/[<>'"&;]/g, '')
+      .slice(0, 15);
+  };
+
 export function AddPlayerModal({ isOpen, onClose, onAdd }: AddPlayerModalProps) {
   const [name, setName] = useState('');
   const [selectedColor, setSelectedColor] = useState(PLAYER_COLORS[0]!);
@@ -30,8 +37,9 @@ export function AddPlayerModal({ isOpen, onClose, onAdd }: AddPlayerModalProps) 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name.trim()) {
-      onAdd(name.trim(), selectedColor);
+    const sanitizedName = sanitizeName(name);
+    if (sanitizedName) {
+      onAdd(sanitizedName, selectedColor);
       setName('');
       setSelectedColor(PLAYER_COLORS[0]!);
       setSelectedAvatar(PLAYER_AVATARS[0]!);
@@ -83,7 +91,7 @@ export function AddPlayerModal({ isOpen, onClose, onAdd }: AddPlayerModalProps) 
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setName(sanitizeName(e.target.value))}
               placeholder="Tape ton pseudo..."
               maxLength={15}
               autoFocus

@@ -12,6 +12,14 @@ export function FinalResults({ players, onPlayAgain, onNewGame }: FinalResultsPr
   const winner = sortedPlayers[0];
   const hasTie = sortedPlayers.filter(p => p.score === winner.score).length > 1;
 
+  const getPlayerStats = (player: Player) => {
+    const total = player.answers.length;
+    const correct = player.answers.filter(a => a.correct).length;
+    const wrong = total - correct;
+    const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+    return { total, correct, wrong, accuracy };
+  };
+
   return (
     <div className="final-results">
       <div className="results-header">
@@ -54,6 +62,37 @@ export function FinalResults({ players, onPlayAgain, onNewGame }: FinalResultsPr
           </span>
           <span className="stat-label">Moyenne</span>
         </div>
+      </div>
+
+      <div className="player-results-details">
+        <h3>Détails par joueur</h3>
+        {sortedPlayers.map(player => {
+          const stats = getPlayerStats(player);
+          return (
+            <div key={player.id} className="player-result-card" style={{ borderColor: player.color.bg }}>
+              <div className="player-result-header">
+                <span className="player-result-name" style={{ color: player.color.bg }}>
+                  {player.name}
+                </span>
+                <span className="player-result-score">{player.score} pts</span>
+              </div>
+              <div className="player-result-stats">
+                <div className="result-stat correct">
+                  <span className="result-stat-value">{stats.correct}</span>
+                  <span className="result-stat-label">Bonnes</span>
+                </div>
+                <div className="result-stat wrong">
+                  <span className="result-stat-value">{stats.wrong}</span>
+                  <span className="result-stat-label">Mauvaises</span>
+                </div>
+                <div className="result-stat accuracy">
+                  <span className="result-stat-value">{stats.accuracy}%</span>
+                  <span className="result-stat-label">Précision</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="results-actions">

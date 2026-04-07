@@ -36,8 +36,16 @@ export function useUserSearch() {
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState<{ id: string; username: string; score: number; createdAt: string } | null>(null);
 
+  const sanitizeSearchQuery = (input: string): string => {
+    return input
+      .trim()
+      .replace(/[<>'"&;\\]/g, '')
+      .slice(0, 50);
+  };
+
   useEffect(() => {
-    if (query.length < 2) {
+    const sanitizedQuery = sanitizeSearchQuery(query);
+    if (sanitizedQuery.length < 2) {
       setResults([]);
       return;
     }
@@ -48,7 +56,7 @@ export function useUserSearch() {
         const { data, error } = await supabase
           .from('leaderboard')
           .select('*')
-          .ilike('username', `%${query}%`)
+          .ilike('username', `%${sanitizedQuery}%`)
           .order('score', { ascending: false })
           .limit(10);
 
@@ -70,5 +78,9 @@ export function useUserSearch() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  return { query, setQuery, results, loading, selectedUser, setSelectedUser };
+  const handleSetQuery = (input: string) => {
+    setQuery(sanitizeSearchQuery(input));
+  };
+
+  return { query, setQuery: handleSetQuery, results, loading, selectedUser, setSelectedUser };
 }

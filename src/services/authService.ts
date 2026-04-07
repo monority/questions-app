@@ -5,6 +5,29 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+interface SupabaseProfile {
+  id: string;
+  email: string;
+  username: string;
+  total_score: number;
+  games_played: number;
+  best_score: number;
+  created_at: string;
+}
+
+function mapProfileFromSupabase(data: SupabaseProfile | null): UserProfile | null {
+  if (!data) return null;
+  return {
+    id: data.id,
+    email: data.email,
+    username: data.username,
+    totalScore: data.total_score ?? 0,
+    gamesPlayed: data.games_played ?? 0,
+    bestScore: data.best_score ?? 0,
+    createdAt: data.created_at ?? new Date().toISOString(),
+  };
+}
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -81,12 +104,13 @@ export const AUTH_SERVICE = {
         total_score: 0,
         games_played: 0,
         best_score: 0,
+        created_at: new Date().toISOString(),
       })
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    return mapProfileFromSupabase(data as SupabaseProfile);
   },
 
   async getProfile(userId: string): Promise<UserProfile | null> {
@@ -97,11 +121,11 @@ export const AUTH_SERVICE = {
       .single();
     
     if (error && error.code !== 'PGRST116') throw error;
-    return data;
+    return mapProfileFromSupabase(data as SupabaseProfile);
   },
 
   async submitScore(userId: string, score: number, username: string) {
-    const { data, error } = await supabase
+    const { data: leaderboardData, error: leaderboardError } = await supabase
       .from('leaderboard')
       .insert({
         user_id: userId,
@@ -110,8 +134,37 @@ export const AUTH_SERVICE = {
       })
       .select();
     
-    if (error) throw error;
-    return data;
+    if (leaderboardError) throw leaderboardError;
+
+    const { data: currentProfile, error: profileError } = await supabase
+      .from('profiles')
+      .select('total_score, games_played, best_score')
+      .eq('id', userId)
+      .single();
+    
+    if (profileError) throw profileError;
+
+    const newTotalScore = (currentProfile?.total_score || 0) + score;
+    const newGamesPlayed = (currentProfile?.games_played || 0) + 1;
+    const newBestScore = Math.max(currentProfile?.best_score || 0, score);
+
+    const { data: updatedProfile, error: updateError } = await supabase
+      .from('profiles')
+      .update({
+        total_score: newTotalScore,
+        games_played: newGamesPlayed,
+        best_score: newBestScore,
+      })
+      .eq('id', userId)
+      .select()
+      .single();
+
+    if (updateError) throw updateError;
+
+    return { 
+      leaderboard: leaderboardData, 
+      profile: mapProfileFromSupabase(updatedProfile as SupabaseProfile) 
+    };
   },
 
   async getGlobalLeaderboard(limit = 20): Promise<LeaderboardEntry[]> {
@@ -126,14 +179,20 @@ export const AUTH_SERVICE = {
   },
 
   async getUserRank(userId: string): Promise<number> {
+    const { data: userScore } = await supabase
+      .from('leaderboard')
+      .select('score')
+      .eq('user_id', userId)
+      .single();
+    
+    const userBestScore = userScore?.score || 0;
+    
     const { data, error } = await supabase
       .from('leaderboard')
       .select('score', { count: 'exact', head: false })
-      .gt('score', (
-        await supabase.from('leaderboard').select('score').eq('user_id', userId).single()
-      ).data?.score || 0);
+      .gt('score', userBestScore);
     
-    if (error) throw error;
-    return data?.length || 0;
+    if (error) return 0;
+    return (data?.length || 0) + 1;
   },
 } as const;

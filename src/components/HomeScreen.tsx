@@ -9,6 +9,7 @@ import { Leaderboard } from './Leaderboard';
 import { AddPlayerModal } from './AddPlayerModal';
 import { LoginModal } from './LoginModal';
 import { UserSearch } from './UserSearch';
+import { ProfileModal } from './ProfileModal';
 import { LoadingSpinner } from './shared/LoadingSpinner';
 import { ModeCard } from './shared/ModeCard';
 import { PlayerList } from './shared/PlayerList';
@@ -31,6 +32,7 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
   const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showUserSearch, setShowUserSearch] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [gameMode, setGameMode] = useState<GameMode>('solo');
   const [playerName] = useState(() => profile?.username ?? player?.name ?? '');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -193,17 +195,7 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
             <div className="user-menu">
               <button 
                 className="user-profile-btn" 
-                onClick={() => {
-                  if (profile) {
-                    search.setSelectedUser({
-                      id: profile.id,
-                      username: profile.username,
-                      score: profile.totalScore,
-                      createdAt: profile.createdAt,
-                    });
-                    setShowUserSearch(true);
-                  }
-                }}
+                onClick={() => setShowProfileModal(true)}
                 title="Voir mon profil"
               >
                 <span className="user-name">{profile?.username || user.email?.split('@')[0]}</span>
@@ -361,6 +353,13 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
           selectedUser={search.selectedUser}
           onSelectUser={(user) => search.setSelectedUser(user)}
           onClose={() => setShowUserSearch(false)}
+        />
+      )}
+
+      {showProfileModal && profile && (
+        <ProfileModal 
+          profile={profile}
+          onClose={() => setShowProfileModal(false)}
         />
       )}
     </div>

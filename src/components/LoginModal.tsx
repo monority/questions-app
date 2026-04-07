@@ -38,6 +38,13 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }
   }
 
+  const sanitizeUsername = (input: string): string => {
+    return input
+      .trim()
+      .replace(/[<>'"&;]/g, '')
+      .slice(0, 20);
+  };
+
   const passwordRequirements = [
     { label: '8 caractères minimum', valid: password.length >= 8 },
     { label: 'Une majuscule', valid: /[A-Z]/.test(password) },
@@ -75,7 +82,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
               <input
                 type="text"
                 value={username}
-                onChange={e => setUsername(e.target.value)}
+                onChange={e => setUsername(sanitizeUsername(e.target.value))}
                 placeholder="Ton pseudo"
                 required
                 minLength={2}
