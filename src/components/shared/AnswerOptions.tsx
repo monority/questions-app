@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { useHaptic } from '../../hooks/useHaptic';
 
 interface AnswerOptionsProps {
@@ -9,7 +10,7 @@ interface AnswerOptionsProps {
   showResult: boolean;
 }
 
-export function AnswerOptions({
+export const AnswerOptions = memo(function AnswerOptions({
   options,
   correctAnswer,
   selectedAnswer,
@@ -78,4 +79,4 @@ export function AnswerOptions({
       ))}
     </div>
   );
-}
+});

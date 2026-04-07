@@ -7,6 +7,7 @@
     margin: 0 auto;
     padding: 1.5rem;
     width: 100%;
+    box-sizing: border-box;
     gap: var(--space-lg);
   }
 
@@ -14,6 +15,7 @@
     text-align: center;
     padding: var(--space-lg) 0;
     position: relative;
+    width: 100%;
   }
 
   .theme-toggle {
@@ -23,20 +25,19 @@
     width: 48px;
     height: 48px;
     background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    font-size: 1.25rem;
+    border: none;
+    border-radius: var(--radius);
     cursor: pointer;
-    transition: var(--transition);
     display: flex;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(10px);
+    transition: var(--transition);
+    color: var(--text-secondary);
   }
 
   .theme-toggle:hover {
-    background: var(--bg-card-hover);
-    transform: scale(1.05);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
     box-shadow: var(--shadow-glow);
   }
 
@@ -74,6 +75,7 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    width: 100%;
   }
 
   .mode-selection h2,
@@ -85,10 +87,15 @@
     color: var(--text-secondary);
   }
 
+  .mode-selection {
+    width: 100%;
+  }
+
   .mode-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
+    width: 100%;
   }
 
   .mode-card {
@@ -99,6 +106,8 @@
     gap: 0.5rem;
     padding: 1.25rem;
     min-height: 120px;
+    width: 100%;
+    box-sizing: border-box;
     background: var(--bg-secondary);
     border: 2px solid var(--border);
     border-radius: var(--radius);
@@ -197,6 +206,39 @@
     color: var(--text-muted);
   }
 
+  .player-preview .player-xp {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+  }
+
+  .player-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .badge-item {
+    font-size: 1.25rem;
+    cursor: help;
+  }
+
+  .xp-progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--bg-card);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+  }
+
+  .xp-progress-fill {
+    height: 100%;
+    background: var(--gradient-accent);
+    border-radius: 999px;
+    transition: width 0.3s ease;
+  }
+
   .game-options-home {
     background: var(--bg-secondary);
     border-radius: var(--radius);
@@ -286,6 +328,8 @@
     transition: var(--transition);
     font-family: inherit;
     box-shadow: var(--shadow-glow);
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .btn-primary.start-btn-large:hover {
@@ -311,6 +355,68 @@
     color: var(--text-muted);
   }
 
+  .stats-preview svg {
+    vertical-align: middle;
+    margin-right: 0.25rem;
+  }
+
+  .leaderboard-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    margin-top: 1rem;
+  }
+
+  .leaderboard-btn:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+  }
+
+  .add-player-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .add-bot-btn {
+    flex: 1;
+    padding: 0.875rem;
+    background: var(--bg-card);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    font-size: 0.875rem;
+  }
+
+  .add-bot-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+  }
+
+  .add-bot-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .player-hint {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-top: 0.75rem;
+  }
+
   @media (max-width: 480px) {
     .mode-grid {
       grid-template-columns: 1fr;
@@ -318,6 +424,15 @@
     
     .home-header h1 {
       font-size: 2rem;
+    }
+    
+    .home-screen {
+      padding: 1rem;
+    }
+    
+    .stats-preview {
+      flex-direction: column;
+      gap: 0.5rem;
     }
   }
 }

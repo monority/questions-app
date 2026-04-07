@@ -31,5 +31,12 @@
     justify-content: center;
     min-height: 100vh;
     padding: 2rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .final-results-screen .final-results {
+    max-width: 600px;
+    margin: 0 auto;
   }
 }

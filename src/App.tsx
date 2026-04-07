@@ -1,13 +1,32 @@
-import type { Player } from './types/game';
-import { SetupScreen } from './components/setup/SetupScreen';
-import { GameScreen } from './components/game/GameScreen';
-import { FinalResults } from './components/results/FinalResults';
-import { HomeScreen } from './components/HomeScreen';
-import { LoadingSpinner } from './components/shared/LoadingSpinner';
+import { lazy, Suspense } from 'react';
 import { useGame } from './hooks';
 import { usePlayer } from './hooks/usePlayer';
 import { useTheme } from './hooks/useTheme';
-import { AnimatePresence, motion } from 'framer-motion';
+import type { Player } from './types/game';
+
+const HomeScreen = lazy(() => import('./components/HomeScreen').then(m => ({ default: m.HomeScreen })));
+const GameScreen = lazy(() => import('./components/game/GameScreen').then(m => ({ default: m.GameScreen })));
+const FinalResults = lazy(() => import('./components/results/FinalResults').then(m => ({ default: m.FinalResults })));
+const SetupScreen = lazy(() => import('./components/setup/SetupScreen').then(m => ({ default: m.SetupScreen })));
+
+function LoadingScreen({ message = 'Chargement...' }: { message?: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ 
+          width: 40, 
+          height: 40, 
+          border: '3px solid var(--border)', 
+          borderTopColor: 'var(--accent)', 
+          borderRadius: '50%', 
+          animation: 'spin 1s linear infinite',
+          margin: '0 auto 1rem'
+        }} />
+        <p>{message}</p>
+      </div>
+    </div>
+  );
+}
 
 function App() {
   const game = useGame();
@@ -35,56 +54,58 @@ function App() {
   const getScreen = () => {
     if (game.phase === 'setup' && game.players.length === 0) {
       return (
-        <HomeScreen 
-          onStartGame={game.startGame}
-          theme={theme}
-          onToggleTheme={toggleTheme}
-        />
+        <Suspense fallback={<LoadingScreen />}>
+          <HomeScreen 
+            onStartGame={game.startGame}
+            theme={theme}
+            onToggleTheme={toggleTheme}
+          />
+        </Suspense>
       );
     }
 
     switch (game.phase) {
       case 'final-results':
         return (
-          <FinalResults
-            players={game.players}
-            onPlayAgain={game.restartGame}
-            onNewGame={game.resetGame}
-          />
+          <Suspense fallback={<LoadingScreen />}>
+            <div className="final-results-screen">
+              <FinalResults
+                players={game.players}
+                onPlayAgain={game.restartGame}
+                onNewGame={game.resetGame}
+              />
+            </div>
+          </Suspense>
         );
       
       case 'playing':
         if (game.questions.length === 0) {
-          return <LoadingSpinner message="Chargement des questions..." />;
+          return <LoadingScreen message="Chargement des questions..." />;
         }
         return (
-          <GameScreen
-            players={game.players}
-            mode={game.settings?.mode ?? 'solo'}
-            questions={game.questions}
-            onGameEnd={handleGameEnd}
-            onExit={game.resetGame}
-          />
+          <Suspense fallback={<LoadingScreen />}>
+            <GameScreen
+              players={game.players}
+              mode={game.settings?.mode ?? 'solo'}
+              questions={game.questions}
+              onGameEnd={handleGameEnd}
+              onExit={game.resetGame}
+            />
+          </Suspense>
         );
       
       default:
-        return <SetupScreen onStartGame={game.startGame} />;
+        return (
+          <Suspense fallback={<LoadingScreen />}>
+            <SetupScreen onStartGame={game.startGame} />
+          </Suspense>
+        );
     }
   };
 
   return (
     <div className="app">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={game.phase === 'playing' ? 'game' : game.phase === 'final-results' ? 'results' : 'home'}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.2 }}
-        >
-          {getScreen()}
-        </motion.div>
-      </AnimatePresence>
+      {getScreen()}
     </div>
   );
 }
