@@ -166,28 +166,13 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
   }, []);
 
   const handleStartClick = useCallback(() => {
-    // If user is logged in but not yet in the players list, add them automatically
-    if (isMulti && user && profile && players.length === 0) {
-      const userPlayer: Player = {
-        id: profile.id,
-        name: profile.username || DEFAULT_USERNAME,
-        score: 0,
-        xp: 0,
-        level: 1,
-        color: { bg: '#6366f1', border: '#818cf8', name: 'Violet' },
-        answers: [],
-        streak: 0,
-        maxStreak: 0,
-        status: 'playing',
-        badges: [],
-      };
-      setPlayers([userPlayer]);
-    } else if (isMulti && players.length < (user ? 1 : 2)) {
+    // If in multiplayer mode and not enough players, open the add player modal
+    if (isMulti && players.length < (user ? 1 : 2)) {
       setShowAddPlayerModal(true);
     } else {
       handleStart();
     }
-  }, [isMulti, user, profile, players.length, handleStart]);
+  }, [isMulti, user, players.length, handleStart, setShowAddPlayerModal]);
 
   if (isLoading) {
     return <LoadingSpinner message="Chargement du profil..." />;

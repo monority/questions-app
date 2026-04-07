@@ -104,7 +104,7 @@ export function FinalResults({ players, onPlayAgain, onNewGame }: FinalResultsPr
           Rejouer
         </button>
         <button className="btn-secondary" onClick={onNewGame}>
-          Nouvelle partie
+          Revenir à l'écran d'accueil
         </button>
       </div>
     </div>
