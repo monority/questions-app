@@ -11,7 +11,7 @@ const productionHeaders = {
   'Cross-Origin-Resource-Policy': 'same-origin',
   'Content-Security-Policy': [
     "default-src 'self'",
-    "script-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "font-src 'self'",
@@ -20,7 +20,6 @@ const productionHeaders = {
     "base-uri 'self'",
     "form-action 'self'",
     "upgrade-insecure-requests",
-    "require-trusted-types-for 'script'",
   ].join('; '),
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
   'X-Permitted-Cross-Domain-Policies': 'none',
@@ -28,6 +27,7 @@ const productionHeaders = {
 
 export default defineConfig({
   plugins: [react()],
+  base: './',
   server: {
     host: true,
     port: 5173,
