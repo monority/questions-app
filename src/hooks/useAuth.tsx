@@ -32,8 +32,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session.user as AuthUser);
         let profileData = await AUTH_SERVICE.getProfile(session.user.id);
         if (!profileData) {
-          const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Player';
-          profileData = await AUTH_SERVICE.getOrCreateProfile(session.user.id, session.user.email || '', username);
+          try {
+            const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Player';
+            profileData = await AUTH_SERVICE.getOrCreateProfile(session.user.id, session.user.email || '', username);
+          } catch (err) {
+            console.warn('Profile creation failed:', err);
+            profileData = null;
+          }
         }
         setProfile(profileData);
       }
@@ -45,8 +50,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session.user as AuthUser);
         let profileData = await AUTH_SERVICE.getProfile(session.user.id);
         if (!profileData) {
-          const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Player';
-          profileData = await AUTH_SERVICE.getOrCreateProfile(session.user.id, session.user.email || '', username);
+          try {
+            const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Player';
+            profileData = await AUTH_SERVICE.getOrCreateProfile(session.user.id, session.user.email || '', username);
+          } catch (err) {
+            console.warn('Profile creation failed:', err);
+            profileData = null;
+          }
         }
         setProfile(profileData);
       } else {
@@ -74,8 +84,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     let profileData = await AUTH_SERVICE.getProfile(user.id);
     if (!profileData) {
-      const username = user.user_metadata?.username || user.email?.split('@')[0] || 'Player';
-      profileData = await AUTH_SERVICE.getOrCreateProfile(user.id, user.email || '', username);
+      try {
+        const username = user.user_metadata?.username || user.email?.split('@')[0] || 'Player';
+        profileData = await AUTH_SERVICE.getOrCreateProfile(user.id, user.email || '', username);
+      } catch (err) {
+        console.warn('Profile creation failed:', err);
+        profileData = null;
+      }
     }
     setProfile(profileData);
   }
