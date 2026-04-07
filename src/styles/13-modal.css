@@ -62,6 +62,22 @@
     box-shadow: 0 0 0 4px var(--accent-glow);
   }
 
+  .password-requirements {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: var(--space-xs);
+    font-size: 0.75rem;
+  }
+
+  .password-requirements .valid {
+    color: var(--color-success);
+  }
+
+  .password-requirements .invalid {
+    color: var(--text-muted);
+  }
+
   .auth-modal .error-message {
     color: var(--color-error);
     font-size: 0.875rem;

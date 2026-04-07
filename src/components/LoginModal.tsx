@@ -38,6 +38,15 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }
   }
 
+  const passwordRequirements = [
+    { label: '8 caractères minimum', valid: password.length >= 8 },
+    { label: 'Une majuscule', valid: /[A-Z]/.test(password) },
+    { label: 'Une minuscule', valid: /[a-z]/.test(password) },
+    { label: 'Un chiffre', valid: /[0-9]/.test(password) },
+  ];
+
+  const isPasswordValid = password.length >= 8 && passwordRequirements.slice(1).every(r => r.valid);
+
   if (!isOpen) return null;
 
   return (
@@ -94,13 +103,26 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
               onChange={e => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              minLength={6}
+              minLength={8}
             />
+            {mode === 'register' && password.length > 0 && (
+              <div className="password-requirements">
+                {passwordRequirements.map((req, i) => (
+                  <span key={i} className={req.valid ? 'valid' : 'invalid'}>
+                    {req.valid ? '✓' : '○'} {req.label}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           {error && <p className="error-message">{error}</p>}
 
-          <button type="submit" className="btn-primary" disabled={loading}>
+          <button 
+            type="submit" 
+            className="btn-primary" 
+            disabled={loading || (mode === 'register' && !isPasswordValid)}
+          >
             {loading ? 'Chargement...' : mode === 'login' ? 'Se connecter' : 'S\'inscrire'}
           </button>
         </form>
