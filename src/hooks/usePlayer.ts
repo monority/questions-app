@@ -47,11 +47,18 @@ export function usePlayer(): UsePlayerReturn {
   const saveProgress = useCallback((p: Player) => {
     localStorage.setItem(PROGRESS_KEY, JSON.stringify({
       id: p.id,
-      name: p.name,
-      xp: p.xp,
-      level: p.level,
-      maxStreak: p.maxStreak,
-      badges: p.badges,
+    name: p.name,
+    xp: p.xp,
+    level: p.level,
+    maxStreak: p.maxStreak,
+    badges: p.badges,
+    // Assuming color is always present or has a default, otherwise handle it.
+    color: p.color,
+    // Assuming status is always present or has a default, otherwise handle it.
+    status: p.status,
+    // Assuming answers is always present or has a default, otherwise handle it.
+    answers: p.answers,
+
     }));
   }, []);
 

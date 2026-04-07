@@ -32,6 +32,9 @@ export const AUTH_SERVICE = {
     });
     
     if (error) throw error;
+    if (data?.user) {
+      await this.createProfile(data.user.id, username, email);
+    }
     return data;
   },
 
@@ -64,6 +67,24 @@ export const AUTH_SERVICE = {
     const { data, error } = await supabase.auth.updateUser({
       data: { username }
     });
+    if (error) throw error;
+    return data;
+  },
+
+  async createProfile(userId: string, username: string, email: string) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .insert({
+        id: userId,
+        username,
+        email,
+        total_score: 0,
+        games_played: 0,
+        best_score: 0,
+      })
+      .select()
+      .single();
+    
     if (error) throw error;
     return data;
   },
