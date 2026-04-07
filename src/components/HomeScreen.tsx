@@ -78,8 +78,8 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
   const getStartButtonText = useMemo(() => {
     if (isMulti) {
       const minNeeded = user ? 1 : 2;
-      return players.length < minNeeded 
-        ? `Ajoutez au moins ${minNeeded - players.length} joueur(s) (${players.length}/${minNeeded})` 
+      return players.length < minNeeded
+        ? `Ajoutez au moins ${minNeeded - players.length} joueur(s) (${players.length}/${minNeeded})`
         : 'Commencer';
     }
     return 'Commencer';
@@ -99,22 +99,29 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
         id: p.id || crypto.randomUUID(),
       }));
 
-      if (user && profile && addedPlayers.length === 0) {
-        finalPlayers = [{
-          id: profile.id,
-          name: profile.username || DEFAULT_USERNAME,
-          score: 0,
-          xp: player?.xp || 0,
-          level: player?.level || 1,
-          color: player?.color || { bg: '#6366f1', border: '#818cf8', name: 'Violet' },
-          answers: [],
-          streak: 0,
-          maxStreak: player?.maxStreak || 0,
-          status: 'playing' as const,
-          badges: player?.badges || [],
-        }];
-      } else if (user && profile && addedPlayers.length > 0) {
-        finalPlayers = addedPlayers;
+      // Always include the logged-in user in party mode
+      if (user && profile) {
+        const userId = profile.id;
+        const userAlreadyInList = addedPlayers.some(p => p.id === userId);
+
+        if (!userAlreadyInList) {
+          const userPlayer: Player = {
+            id: userId,
+            name: profile.username || DEFAULT_USERNAME,
+            score: 0,
+            xp: player?.xp || 0,
+            level: player?.level || 1,
+            color: player?.color || { bg: '#6366f1', border: '#818cf8', name: 'Violet' },
+            answers: [],
+            streak: 0,
+            maxStreak: player?.maxStreak || 0,
+            status: 'playing' as const,
+            badges: player?.badges || [],
+          };
+          finalPlayers = [userPlayer, ...addedPlayers];
+        } else {
+          finalPlayers = addedPlayers;
+        }
       } else {
         finalPlayers = addedPlayers;
       }
@@ -161,7 +168,7 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
 
   const saveEditingName = useCallback(() => {
     if (editingPlayerId && editingName.trim()) {
-      setPlayers(prev => prev.map(p => 
+      setPlayers(prev => prev.map(p =>
         p.id === editingPlayerId ? { ...p, name: editingName.trim() } : p
       ));
     }
@@ -194,41 +201,41 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
           <h1>
             <span className="logo-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                <path d="M12 17h.01"/>
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                <path d="M12 17h.01" />
               </svg>
             </span>
             Culture Quiz
           </h1>
         </div>
-        
+
         <div className="header-actions">
-          <button 
-            className="header-btn leaderboard-btn" 
+          <button
+            className="header-btn leaderboard-btn"
             onClick={() => setShowUserSearch(true)}
             title="Rechercher un joueur"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="m21 21-4.35-4.35"/>
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
             </svg>
           </button>
-          
-          <button 
-            className="header-btn leaderboard-btn" 
+
+          <button
+            className="header-btn leaderboard-btn"
             onClick={() => { refreshLeaderboard(); setShowLeaderboard(true); }}
             title="Classement global"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2Z" />
             </svg>
           </button>
-          
+
           {user ? (
             <div className="user-menu">
-              <button 
-                className="user-profile-btn" 
+              <button
+                className="user-profile-btn"
                 onClick={() => setShowProfileModal(true)}
                 title="Voir mon profil"
               >
@@ -236,23 +243,23 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
               </button>
               <button onClick={signOut} className="header-btn logout-btn" title="Déconnexion">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
                 </svg>
               </button>
             </div>
           ) : (
             <button className="header-btn login-btn" onClick={() => setShowLoginModal(true)}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" />
               </svg>
               <span>Connexion</span>
             </button>
           )}
-          
+
           <button className="theme-toggle" onClick={onToggleTheme} aria-label="Changer le theme">
-            {theme === 'dark' 
-              ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-              : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            {theme === 'dark'
+              ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg>
+              : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
             }
           </button>
         </div>
@@ -296,15 +303,15 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
               onCancelEdit={cancelEditingName}
             />
             <div className="add-player-buttons">
-              <button 
-                className="add-bot-btn" 
+              <button
+                className="add-bot-btn"
                 onClick={() => setShowAddPlayerModal(true)}
                 disabled={players.length >= 5}
               >
                 + Ajouter un joueur
               </button>
-              <button 
-                className="add-bot-btn" 
+              <button
+                className="add-bot-btn"
                 onClick={addBot}
                 disabled={players.length >= 5}
               >
@@ -319,16 +326,16 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
 
         <section className="game-options-home">
           <h2>Options</h2>
-          
+
           <div className="option-group">
             <QuestionCountSelector value={questionCount} onChange={setQuestionCount} />
           </div>
 
           <div className="option-group">
             <label>Catégories</label>
-            <CategorySelector 
-              selectedCategories={selectedCategories} 
-              onCategoryChange={setSelectedCategories} 
+            <CategorySelector
+              selectedCategories={selectedCategories}
+              onCategoryChange={setSelectedCategories}
             />
           </div>
         </section>
@@ -337,7 +344,7 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
           <span>{getStartButtonText}</span>
           <span className="btn-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polygon points="5 3 19 12 5 21 5 3"/>
+              <polygon points="5 3 19 12 5 21 5 3" />
             </svg>
           </span>
         </button>
@@ -345,9 +352,9 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
 
       <footer className="home-footer">
         <div className="stats-preview">
-          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> 2250+ questions</span>
-          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> 8 badges</span>
-          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> 10 niveaux</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg> 2250+ questions</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 8 badges</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg> 10 niveaux</span>
         </div>
       </footer>
 
@@ -380,18 +387,18 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
 
       {showLoginModal && (
         <Suspense fallback={<LoadingSpinner message="Chargement..." />}>
-          <LoginModal 
-            isOpen={showLoginModal} 
+          <LoginModal
+            isOpen={showLoginModal}
             onClose={() => {
               setShowLoginModal(false);
-            }} 
+            }}
           />
         </Suspense>
       )}
 
       {showUserSearch && (
         <Suspense fallback={<LoadingSpinner message="Chargement..." />}>
-          <UserSearch 
+          <UserSearch
             query={search.query}
             setQuery={search.setQuery}
             results={search.results}
@@ -404,7 +411,7 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
       )}
 
       {showProfileModal && profile && (
-        <ProfileModal 
+        <ProfileModal
           profile={profile}
           onClose={() => setShowProfileModal(false)}
         />
