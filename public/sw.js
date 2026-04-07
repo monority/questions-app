@@ -5,6 +5,8 @@ const STATIC_ASSETS = [
   '/questions.json',
   '/favicon.svg',
   '/manifest.json',
+  '/robots.txt',
+  '/sitemap.xml',
 ];
 
 const CACHE_STRATEGIES = {

@@ -8,6 +8,24 @@ interface RawQuestion {
   difficulty: 'easy' | 'medium' | 'hard';
 }
 
+let cachedQuestions: RawQuestion[] | null = null;
+let loadingPromise: Promise<RawQuestion[]> | null = null;
+
+async function loadQuestions(): Promise<RawQuestion[]> {
+  if (cachedQuestions) return cachedQuestions;
+  if (loadingPromise) return loadingPromise;
+
+  loadingPromise = fetch('/questions.json')
+    .then(res => res.json())
+    .then(data => {
+      cachedQuestions = data;
+      loadingPromise = null;
+      return data;
+    });
+
+  return loadingPromise;
+}
+
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -35,18 +53,37 @@ function cleanQuestion(q: RawQuestion, id: number): Question {
   };
 }
 
-let cachedQuestions: RawQuestion[] | null = null;
-
 export const QUESTION_SERVICE = {
   async fetch(amount: number = 10): Promise<Question[]> {
-    if (!cachedQuestions) {
-      const response = await fetch('/questions.json');
-      cachedQuestions = await response.json();
-    }
-    
-    const shuffled = shuffleArray([...cachedQuestions!]);
+    const allQuestions = await loadQuestions();
+    const shuffled = shuffleArray([...allQuestions]);
     const selected = shuffled.slice(0, amount);
-    
     return selected.map((q, index) => cleanQuestion(q, index));
+  },
+
+  async fetchByCategory(category: string, amount: number = 10): Promise<Question[]> {
+    const allQuestions = await loadQuestions();
+    const filtered = allQuestions.filter(q => q.category === category);
+    const shuffled = shuffleArray([...filtered]);
+    const selected = shuffled.slice(0, amount);
+    return selected.map((q, index) => cleanQuestion(q, index));
+  },
+
+  async getCategories(): Promise<string[]> {
+    const allQuestions = await loadQuestions();
+    return [...new Set(allQuestions.map(q => q.category))];
+  },
+
+  async getCategoryStats(): Promise<Record<string, number>> {
+    const allQuestions = await loadQuestions();
+    return allQuestions.reduce((acc, q) => {
+      acc[q.category] = (acc[q.category] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+  },
+
+  clearCache() {
+    cachedQuestions = null;
+    loadingPromise = null;
   },
 } as const;
