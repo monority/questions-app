@@ -3,6 +3,7 @@ import { useGame } from './hooks';
 import { usePlayer } from './hooks/usePlayer';
 import { useTheme } from './hooks/useTheme';
 import { useAuth } from './hooks/useAuth';
+import { useToast } from './hooks/useToast';
 import { AUTH_SERVICE } from './services/authService';
 import type { Player } from './types/game';
 
@@ -35,6 +36,7 @@ function App() {
   const { updateStats } = usePlayer();
   const { theme, toggleTheme } = useTheme();
   const { user, profile } = useAuth();
+  const { showToast } = useToast();
   
   const handleGameEnd = async (players: Player[]) => {
     const mainPlayer = players[0];
@@ -55,7 +57,7 @@ function App() {
       
       if (earnedBadges.length > 0) {
         setTimeout(() => {
-          alert(`🎉 Félicitations! Vous avez débloqué ${earnedBadges.length} nouveau(x) badge(s)!`);
+          showToast(`🎉 Félicitations! Vous avez débloqué ${earnedBadges.length} nouveau(x) badge(s)!`, 'badge');
         }, 500);
       }
     }

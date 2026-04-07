@@ -31,14 +31,23 @@ export function useGame(): UseGameReturn {
       return;
     }
 
-    const fetchedQuestions = await QUESTION_SERVICE.fetch(settings.questionsPerRound);
+    try {
+      const fetchedQuestions = await QUESTION_SERVICE.fetch(settings.questionsPerRound);
 
-    setState({
-      phase: 'playing',
-      players,
-      settings,
-      questions: fetchedQuestions,
-    });
+      if (fetchedQuestions.length === 0) {
+        console.error('No questions fetched');
+        return;
+      }
+
+      setState({
+        phase: 'playing',
+        players,
+        settings,
+        questions: fetchedQuestions,
+      });
+    } catch (err) {
+      console.error('Failed to start game:', err);
+    }
   }, []);
 
   const restartGame = useCallback(async () => {

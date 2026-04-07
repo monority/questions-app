@@ -198,7 +198,7 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
                 onClick={() => setShowProfileModal(true)}
                 title="Voir mon profil"
               >
-                <span className="user-name">{profile?.username || user.email?.split('@')[0]}</span>
+                <span className="user-name">{profile?.username || user.user_metadata?.username || user.email?.split('@')[0]}</span>
               </button>
               <button onClick={signOut} className="header-btn logout-btn" title="Déconnexion">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">

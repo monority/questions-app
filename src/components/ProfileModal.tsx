@@ -13,6 +13,9 @@ export function ProfileModal({ profile, onClose }: ProfileModalProps) {
     year: 'numeric'
   });
 
+  const avatarLetter = profile.username?.[0]?.toUpperCase() ?? profile.email?.[0]?.toUpperCase() ?? '?';
+  const displayName = profile.username || profile.email?.split('@')[0] || 'Joueur';
+
   return (
     <motion.div 
       className="modal-overlay"
@@ -31,9 +34,9 @@ export function ProfileModal({ profile, onClose }: ProfileModalProps) {
         
         <div className="profile-header">
           <div className="profile-avatar">
-            {profile.username.charAt(0).toUpperCase()}
+            {avatarLetter}
           </div>
-          <h2>{profile.username}</h2>
+          <h2>{displayName}</h2>
           <p className="profile-member-since">Membre depuis {memberSince}</p>
         </div>
 

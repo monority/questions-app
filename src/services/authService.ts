@@ -114,14 +114,31 @@ export const AUTH_SERVICE = {
   },
 
   async getProfile(userId: string): Promise<UserProfile | null> {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        if (error.code === 'PGRST116') {
+          return null;
+        }
+        throw error;
+      }
+      return mapProfileFromSupabase(data as SupabaseProfile);
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+      return null;
+    }
+  },
+
+  async getOrCreateProfile(userId: string, email: string, username: string): Promise<UserProfile | null> {
+    const existing = await this.getProfile(userId);
+    if (existing) return existing;
     
-    if (error && error.code !== 'PGRST116') throw error;
-    return mapProfileFromSupabase(data as SupabaseProfile);
+    return this.createProfile(userId, username || email.split('@')[0], email);
   },
 
   async submitScore(userId: string, score: number, username: string) {

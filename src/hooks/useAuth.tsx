@@ -27,18 +27,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
         setUser(session.user as AuthUser);
-        loadProfile(session.user.id);
+        let profileData = await AUTH_SERVICE.getProfile(session.user.id);
+        if (!profileData) {
+          const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Player';
+          profileData = await AUTH_SERVICE.getOrCreateProfile(session.user.id, session.user.email || '', username);
+        }
+        setProfile(profileData);
       }
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         setUser(session.user as AuthUser);
-        loadProfile(session.user.id);
+        let profileData = await AUTH_SERVICE.getProfile(session.user.id);
+        if (!profileData) {
+          const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Player';
+          profileData = await AUTH_SERVICE.getOrCreateProfile(session.user.id, session.user.email || '', username);
+        }
+        setProfile(profileData);
       } else {
         setUser(null);
         setProfile(null);
@@ -61,12 +71,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function signIn(email: string, password: string) {
     const { user } = await AUTH_SERVICE.signIn(email, password);
     setUser(user as AuthUser);
-    await loadProfile(user.id);
+    
+    let profileData = await AUTH_SERVICE.getProfile(user.id);
+    if (!profileData) {
+      const username = user.user_metadata?.username || user.email?.split('@')[0] || 'Player';
+      profileData = await AUTH_SERVICE.getOrCreateProfile(user.id, user.email || '', username);
+    }
+    setProfile(profileData);
   }
 
   async function signUp(email: string, password: string, username: string) {
-    await AUTH_SERVICE.signUp(email, password, username);
-    await signIn(email, password);
+    try {
+      await AUTH_SERVICE.signUp(email, password, username);
+      await signIn(email, password);
+    } catch (err) {
+      console.error('Signup error:', err);
+      throw err;
+    }
   }
 
   async function signOut() {
