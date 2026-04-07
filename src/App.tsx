@@ -7,6 +7,7 @@ import { LoadingSpinner } from './components/shared/LoadingSpinner';
 import { useGame } from './hooks';
 import { usePlayer } from './hooks/usePlayer';
 import { useTheme } from './hooks/useTheme';
+import { AnimatePresence, motion } from 'framer-motion';
 
 function App() {
   const game = useGame();
@@ -31,40 +32,32 @@ function App() {
     game.endGame(players);
   };
 
-  if (game.phase === 'setup' && game.players.length === 0) {
-    return (
-      <div className="app">
+  const getScreen = () => {
+    if (game.phase === 'setup' && game.players.length === 0) {
+      return (
         <HomeScreen 
           onStartGame={game.startGame}
           theme={theme}
           onToggleTheme={toggleTheme}
         />
-      </div>
-    );
-  }
+      );
+    }
 
-  switch (game.phase) {
-    case 'final-results':
-      return (
-        <div className="app final-results-screen">
+    switch (game.phase) {
+      case 'final-results':
+        return (
           <FinalResults
             players={game.players}
             onPlayAgain={game.restartGame}
             onNewGame={game.resetGame}
           />
-        </div>
-      );
-    
-    case 'playing':
-      if (game.questions.length === 0) {
-        return (
-          <div className="app">
-            <LoadingSpinner message="Chargement des questions..." />
-          </div>
         );
-      }
-      return (
-        <div className="app game-screen-wrapper">
+      
+      case 'playing':
+        if (game.questions.length === 0) {
+          return <LoadingSpinner message="Chargement des questions..." />;
+        }
+        return (
           <GameScreen
             players={game.players}
             mode={game.settings?.mode ?? 'solo'}
@@ -72,16 +65,28 @@ function App() {
             onGameEnd={handleGameEnd}
             onExit={game.resetGame}
           />
-        </div>
-      );
-    
-    default:
-      return (
-        <div className="app">
-          <SetupScreen onStartGame={game.startGame} />
-        </div>
-      );
-  }
+        );
+      
+      default:
+        return <SetupScreen onStartGame={game.startGame} />;
+    }
+  };
+
+  return (
+    <div className="app">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={game.phase === 'playing' ? 'game' : game.phase === 'final-results' ? 'results' : 'home'}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+        >
+          {getScreen()}
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
 }
 
 export default App;

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import type { GameSettings, GameMode, Player } from '../types/game';
 import { usePlayer } from '../hooks/usePlayer';
 import { useLeaderboard } from '../hooks/useLeaderboard';
@@ -171,13 +172,19 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
         <section className="mode-selection">
           <h2>Choisissez votre mode</h2>
           <div className="mode-grid">
-            {GAME_MODES.map(mode => (
-              <ModeCard
+            {GAME_MODES.map((mode, index) => (
+              <motion.div
                 key={mode.id}
-                {...mode}
-                isSelected={gameMode === mode.id}
-                onClick={() => setGameMode(mode.id)}
-              />
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <ModeCard
+                  {...mode}
+                  isSelected={gameMode === mode.id}
+                  onClick={() => setGameMode(mode.id)}
+                />
+              </motion.div>
             ))}
           </div>
         </section>
