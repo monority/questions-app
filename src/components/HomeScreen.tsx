@@ -288,6 +288,37 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
                   <div className="xp-progress-fill" style={{ width: `${levelInfo.progress}%` }}></div>
                 </div>
               )}
+              
+              {player.answers.length > 0 && (
+                <div className="player-game-stats">
+                  <div className="stat-item">
+                    <span className="stat-label">Parties jouées</span>
+                    <span className="stat-value">{Math.ceil(player.answers.length / 10)}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Réponses</span>
+                    <span className="stat-value">{player.answers.length}</span>
+                  </div>
+                  <div className="stat-item correct">
+                    <span className="stat-label">Correctes</span>
+                    <span className="stat-value">{player.answers.filter(a => a.correct).length}</span>
+                  </div>
+                  <div className="stat-item incorrect">
+                    <span className="stat-label">Ratées</span>
+                    <span className="stat-value">{player.answers.filter(a => !a.correct).length}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Précision</span>
+                    <span className="stat-value">
+                      {Math.round((player.answers.filter(a => a.correct).length / player.answers.length) * 100)}%
+                    </span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Meilleure série</span>
+                    <span className="stat-value">{player.maxStreak}</span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
           {badges.length > 0 && (
