@@ -110,6 +110,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [signIn]);
 
   const signOut = useCallback(async () => {
+    localStorage.removeItem('quiz_player_data');
+    localStorage.removeItem('quiz_leaderboard');
     await AUTH_SERVICE.signOut();
     setUser(null);
     setProfile(null);

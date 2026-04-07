@@ -77,12 +77,13 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
 
   const getStartButtonText = useMemo(() => {
     if (isMulti) {
-      return players.length < 2 
-        ? `Ajoutez au moins 2 joueurs (${players.length}/2)` 
+      const minNeeded = user ? 1 : 2;
+      return players.length < minNeeded 
+        ? `Ajoutez au moins ${minNeeded - players.length} joueur(s) (${players.length}/${minNeeded})` 
         : 'Commencer';
     }
     return 'Commencer';
-  }, [isMulti, players.length]);
+  }, [isMulti, players.length, user]);
 
   const handleStart = useCallback(() => {
     const finalName = playerName || DEFAULT_USERNAME;
@@ -160,12 +161,13 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
   }, []);
 
   const handleStartClick = useCallback(() => {
-    if (isMulti && players.length < 2) {
+    const minNeeded = user ? 1 : 2;
+    if (isMulti && players.length < minNeeded) {
       setShowAddPlayerModal(true);
     } else {
       handleStart();
     }
-  }, [isMulti, players.length, handleStart]);
+  }, [isMulti, players.length, user, handleStart]);
 
   if (isLoading) {
     return <LoadingSpinner message="Chargement du profil..." />;
