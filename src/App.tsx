@@ -2,6 +2,8 @@ import { lazy, Suspense } from 'react';
 import { useGame } from './hooks';
 import { usePlayer } from './hooks/usePlayer';
 import { useTheme } from './hooks/useTheme';
+import { useAuth } from './hooks/useAuth';
+import { AUTH_SERVICE } from './services/authService';
 import type { Player } from './types/game';
 
 const HomeScreen = lazy(() => import('./components/HomeScreen').then(m => ({ default: m.HomeScreen })));
@@ -32,8 +34,9 @@ function App() {
   const game = useGame();
   const { updateStats } = usePlayer();
   const { theme, toggleTheme } = useTheme();
+  const { user, profile } = useAuth();
   
-  const handleGameEnd = (players: Player[]) => {
+  const handleGameEnd = async (players: Player[]) => {
     const mainPlayer = players[0];
     if (mainPlayer) {
       const earnedBadges = updateStats(mainPlayer.answers.map(a => ({
@@ -41,6 +44,14 @@ function App() {
         timeMs: a.timeMs,
         points: a.points,
       })));
+      
+      if (user && profile) {
+        try {
+          await AUTH_SERVICE.submitScore(user.id, mainPlayer.score, profile.username);
+        } catch (err) {
+          console.error('Failed to submit score:', err);
+        }
+      }
       
       if (earnedBadges.length > 0) {
         setTimeout(() => {

@@ -80,6 +80,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 required
                 minLength={2}
                 maxLength={20}
+                autoComplete="username"
               />
             </div>
           )}
@@ -92,6 +93,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
               onChange={e => setEmail(e.target.value)}
               placeholder="ton@email.com"
               required
+              autoComplete="email"
             />
           </div>
           
@@ -104,6 +106,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
               placeholder="••••••••"
               required
               minLength={8}
+              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
             />
             {mode === 'register' && password.length > 0 && (
               <div className="password-requirements">

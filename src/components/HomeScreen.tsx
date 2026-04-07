@@ -4,9 +4,11 @@ import type { GameSettings, GameMode, Player } from '../types/game';
 import { usePlayer } from '../hooks/usePlayer';
 import { useLeaderboard } from '../hooks/useLeaderboard';
 import { useAuth } from '../hooks/useAuth';
+import { useUserSearch } from '../hooks/useGlobalLeaderboard';
 import { Leaderboard } from './Leaderboard';
 import { AddPlayerModal } from './AddPlayerModal';
 import { LoginModal } from './LoginModal';
+import { UserSearch } from './UserSearch';
 import { LoadingSpinner } from './shared/LoadingSpinner';
 import { ModeCard } from './shared/ModeCard';
 import { PlayerList } from './shared/PlayerList';
@@ -21,14 +23,16 @@ interface HomeScreenProps {
 }
 
 export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProps) {
-  const { player, isLoading, setPlayerName, getLevelInfo, getBadges } = usePlayer();
+  const { player, isLoading, setPlayerName } = usePlayer();
   const { user, profile, signOut } = useAuth();
   const { entries } = useLeaderboard();
+  const search = useUserSearch();
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showUserSearch, setShowUserSearch] = useState(false);
   const [gameMode, setGameMode] = useState<GameMode>('solo');
-  const [playerName, setPlayerNameInput] = useState(() => player?.name ?? '');
+  const [playerName] = useState(() => profile?.username ?? player?.name ?? '');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [questionCount, setQuestionCount] = useState(10);
   const [players, setPlayers] = useState<Player[]>([]);
@@ -40,9 +44,6 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
   if (isLoading) {
     return <LoadingSpinner message="Chargement du profil..." />;
   }
-
-  const levelInfo = getLevelInfo();
-  const badges = getBadges();
 
   const getStartButtonText = () => {
     if (isMulti) {
@@ -169,6 +170,17 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
         <div className="header-actions">
           <button 
             className="header-btn leaderboard-btn" 
+            onClick={() => setShowUserSearch(true)}
+            title="Rechercher un joueur"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+          </button>
+          
+          <button 
+            className="header-btn leaderboard-btn" 
             onClick={() => setShowLeaderboard(true)}
             title="Classement global"
           >
@@ -179,7 +191,23 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
           
           {user ? (
             <div className="user-menu">
-              <span className="user-name">{profile?.username || user.email?.split('@')[0]}</span>
+              <button 
+                className="user-profile-btn" 
+                onClick={() => {
+                  if (profile) {
+                    search.setSelectedUser({
+                      id: profile.id,
+                      username: profile.username,
+                      score: profile.totalScore,
+                      createdAt: profile.createdAt,
+                    });
+                    setShowUserSearch(true);
+                  }
+                }}
+                title="Voir mon profil"
+              >
+                <span className="user-name">{profile?.username || user.email?.split('@')[0]}</span>
+              </button>
               <button onClick={signOut} className="header-btn logout-btn" title="Déconnexion">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
                   <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
@@ -263,75 +291,6 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
           </section>
         )}
 
-        <section className="player-setup-home">
-          <h2>Votre profil</h2>
-          <input
-            type="text"
-            value={playerName}
-            onChange={(e) => setPlayerNameInput(e.target.value)}
-            placeholder="Entrez votre pseudo..."
-            maxLength={15}
-            className="player-name-input"
-          />
-          {player && (
-            <div className="player-preview">
-              <div className="player-avatar" style={{ backgroundColor: player.color.bg }}>
-                {player.name.charAt(0).toUpperCase()}
-              </div>
-              <div className="player-stats">
-                <span className="player-level">Niveau {player.level}</span>
-                <span className="player-title">{levelInfo?.title || 'Novice'}</span>
-                <span className="player-xp">XP: {player.xp}</span>
-              </div>
-              {levelInfo && (
-                <div className="xp-progress-bar">
-                  <div className="xp-progress-fill" style={{ width: `${levelInfo.progress}%` }}></div>
-                </div>
-              )}
-              
-              {player.answers.length > 0 && (
-                <div className="player-game-stats">
-                  <div className="stat-item">
-                    <span className="stat-label">Parties jouées</span>
-                    <span className="stat-value">{Math.ceil(player.answers.length / 10)}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">Réponses</span>
-                    <span className="stat-value">{player.answers.length}</span>
-                  </div>
-                  <div className="stat-item correct">
-                    <span className="stat-label">Correctes</span>
-                    <span className="stat-value">{player.answers.filter(a => a.correct).length}</span>
-                  </div>
-                  <div className="stat-item incorrect">
-                    <span className="stat-label">Ratées</span>
-                    <span className="stat-value">{player.answers.filter(a => !a.correct).length}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">Précision</span>
-                    <span className="stat-value">
-                      {Math.round((player.answers.filter(a => a.correct).length / player.answers.length) * 100)}%
-                    </span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">Meilleure série</span>
-                    <span className="stat-value">{player.maxStreak}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          {badges.length > 0 && (
-            <div className="player-badges">
-              {badges.map(badge => (
-                <span key={badge.id} className="badge-item" title={badge.description}>
-                  {badge.icon}
-                </span>
-              ))}
-            </div>
-          )}
-        </section>
-
         <section className="game-options-home">
           <h2>Options</h2>
           
@@ -392,6 +351,18 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
       />
 
       <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+
+      {showUserSearch && (
+        <UserSearch 
+          query={search.query}
+          setQuery={search.setQuery}
+          results={search.results}
+          loading={search.loading}
+          selectedUser={search.selectedUser}
+          onSelectUser={(user) => search.setSelectedUser(user)}
+          onClose={() => setShowUserSearch(false)}
+        />
+      )}
     </div>
   );
 }
