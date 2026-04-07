@@ -135,6 +135,22 @@
 
   .entry-score {
     text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .score-best {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .score-total {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
   }
 
   .score-value {

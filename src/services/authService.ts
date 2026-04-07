@@ -53,6 +53,7 @@ export interface LeaderboardEntry {
   userId: string;
   username: string;
   score: number;
+  totalScore: number;
   createdAt: string;
 }
 
@@ -208,12 +209,20 @@ export const AUTH_SERVICE = {
           user_id: userId,
           username: safeUsername || DEFAULT_USERNAME,
           score: newBestScore,
+          total_score: newTotalScore,
         }, {
           onConflict: 'user_id',
           ignoreDuplicates: false,
         });
       
       if (upsertError) throw upsertError;
+    } else if (currentProfile) {
+      const { error: updateTotalError } = await supabase
+        .from('leaderboard')
+        .update({ total_score: newTotalScore })
+        .eq('user_id', userId);
+      
+      if (updateTotalError) throw updateTotalError;
     }
 
     const { data: updatedProfile } = await supabase
@@ -236,7 +245,14 @@ export const AUTH_SERVICE = {
       .limit(limit);
     
     if (error) throw error;
-    return data || [];
+    return (data || []).map(d => ({
+      id: d.user_id,
+      userId: d.user_id,
+      username: d.username,
+      score: d.score,
+      totalScore: d.total_score || 0,
+      createdAt: d.created_at,
+    }));
   },
 
   async getUserRank(userId: string): Promise<number> {

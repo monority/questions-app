@@ -47,3 +47,6 @@ WHERE id NOT IN (
 
 -- 5. CRÉER CONTRAINTE UNIQUE SUR LEADERBOARD
 ALTER TABLE leaderboard ADD CONSTRAINT leaderboard_user_id_key UNIQUE (user_id);
+
+-- 6. AJOUTER COLONNE total_score SI PAS DÉJÀ FAIT
+ALTER TABLE leaderboard ADD COLUMN IF NOT EXISTS total_score INTEGER DEFAULT 0;

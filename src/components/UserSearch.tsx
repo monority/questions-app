@@ -3,10 +3,10 @@ import { motion } from 'framer-motion';
 interface UserSearchProps {
   query: string;
   setQuery: (q: string) => void;
-  results: { id: string; username: string; score: number; createdAt: string }[];
+  results: { id: string; username: string; score: number; totalScore: number; createdAt: string }[];
   loading: boolean;
-  selectedUser: { id: string; username: string; score: number; createdAt: string } | null;
-  onSelectUser: (user: { id: string; username: string; score: number; createdAt: string }) => void;
+  selectedUser: { id: string; username: string; score: number; totalScore: number; createdAt: string } | null;
+  onSelectUser: (user: { id: string; username: string; score: number; totalScore: number; createdAt: string }) => void;
   onClose: () => void;
 }
 
@@ -52,7 +52,7 @@ export function UserSearch({ query, setQuery, results, loading, selectedUser, on
               onClick={() => onSelectUser(user)}
             >
               <span className="user-result-name">{user.username}</span>
-              <span className="user-result-score">{user.score} pts</span>
+              <span className="user-result-score">Best: {user.score} • Total: {user.totalScore}</span>
             </button>
           ))}
         </div>
@@ -60,7 +60,8 @@ export function UserSearch({ query, setQuery, results, loading, selectedUser, on
         {selectedUser && (
           <div className="selected-user-profile">
             <h3>Profil de {selectedUser.username}</h3>
-            <p>Score: {selectedUser.score} points</p>
+            <p>Meilleur score: {selectedUser.score} points</p>
+            <p>Score total: {selectedUser.totalScore} points</p>
             <p>Membre depuis: {
             selectedUser.createdAt && !isNaN(Date.parse(selectedUser.createdAt))
               ? new Date(selectedUser.createdAt).toLocaleDateString('fr-FR')

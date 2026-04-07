@@ -51,8 +51,8 @@ export const Leaderboard = React.memo(function Leaderboard({ entries, onClose }:
                   </span>
                 </div>
                 <div className="entry-score">
-                  <span className="score-value">{entry.score}</span>
-                  <span className="score-label">pts</span>
+                  <span className="score-best">Best: {entry.score}</span>
+                  <span className="score-total">Total: {entry.totalScore}</span>
                 </div>
               </div>
             ))}

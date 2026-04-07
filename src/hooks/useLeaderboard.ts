@@ -5,6 +5,7 @@ export interface LeaderboardEntry {
   id: string;
   name: string;
   score: number;
+  totalScore: number;
   xp: number;
   level: number;
   date: string;
@@ -29,10 +30,11 @@ export function useLeaderboard() {
       
       if (error) throw error;
       
-      const entries = (data || []).map((d: { user_id: string; username: string; score: number; created_at: string }) => ({
+      const entries = (data || []).map((d: { user_id: string; username: string; score: number; total_score: number; created_at: string }) => ({
         id: d.user_id,
         name: d.username,
         score: d.score,
+        totalScore: d.total_score || 0,
         xp: 0,
         level: 1,
         date: d.created_at,
