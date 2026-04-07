@@ -171,19 +171,21 @@ export const AUTH_SERVICE = {
   },
 
   async submitScore(userId: string, score: number, username: string) {
-    const safeUsername = this.sanitizeUsername(username);
-    
-    const { data: currentProfile, error: fetchError } = await supabase
+    const { data: profile, error: fetchError } = await supabase
       .from('profiles')
-      .select('total_score, games_played, best_score')
+      .select('username, total_score, games_played, best_score')
       .eq('id', userId)
       .single();
     
-    if (fetchError) throw fetchError;
+    if (fetchError) {
+      console.error('submitScore: fetch profile error', fetchError);
+      throw fetchError;
+    }
 
-    const newTotalScore = (currentProfile?.total_score || 0) + score;
-    const newGamesPlayed = (currentProfile?.games_played || 0) + 1;
-    const newBestScore = Math.max(currentProfile?.best_score || 0, score);
+    const safeUsername = this.sanitizeUsername(profile?.username || username);
+    const newTotalScore = (profile?.total_score || 0) + score;
+    const newGamesPlayed = (profile?.games_played || 0) + 1;
+    const newBestScore = Math.max(profile?.best_score || 0, score);
 
     const { error: updateError } = await supabase
       .from('profiles')
@@ -194,7 +196,10 @@ export const AUTH_SERVICE = {
       })
       .eq('id', userId);
 
-    if (updateError) throw updateError;
+    if (updateError) {
+      console.error('submitScore: update profile error', updateError);
+      throw updateError;
+    }
 
     const { data: existing } = await supabase
       .from('leaderboard')
@@ -215,14 +220,23 @@ export const AUTH_SERVICE = {
           ignoreDuplicates: false,
         });
       
-      if (upsertError) throw upsertError;
-    } else if (currentProfile) {
+      if (upsertError) {
+        console.error('submitScore: upsert leaderboard error', upsertError);
+        throw upsertError;
+      }
+    } else if (existing) {
       const { error: updateTotalError } = await supabase
         .from('leaderboard')
-        .update({ total_score: newTotalScore })
+        .update({ 
+          total_score: newTotalScore,
+          username: safeUsername,
+        })
         .eq('user_id', userId);
       
-      if (updateTotalError) throw updateTotalError;
+      if (updateTotalError) {
+        console.error('submitScore: update leaderboard error', updateTotalError);
+        throw updateTotalError;
+      }
     }
 
     const { data: updatedProfile } = await supabase

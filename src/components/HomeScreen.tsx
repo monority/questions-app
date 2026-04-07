@@ -35,7 +35,7 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
   const [showUserSearch, setShowUserSearch] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [gameMode, setGameMode] = useState<GameMode>('solo');
-  const [playerName] = useState(() => profile?.username ?? player?.name ?? '');
+  const selectedUsername = profile?.username ?? player?.name ?? '';
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [questionCount, setQuestionCount] = useState(10);
   const [players, setPlayers] = useState<Player[]>(() => {
@@ -86,8 +86,8 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
   }, [isMulti, players.length, user]);
 
   const handleStart = useCallback(() => {
-    const finalName = playerName || DEFAULT_USERNAME;
-    if (playerName !== player?.name) {
+    const finalName = selectedUsername || DEFAULT_USERNAME;
+    if (selectedUsername !== player?.name) {
       setPlayerName(finalName);
     }
 
@@ -133,7 +133,7 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
       categories: selectedCategories,
       difficulty: 'all',
     }, finalPlayers);
-  }, [playerName, player, isMulti, players, onStartGame, gameMode, questionCount, selectedCategories, createHumanPlayer, setPlayerName]);
+  }, [selectedUsername, player, isMulti, players, onStartGame, gameMode, questionCount, selectedCategories, createHumanPlayer, setPlayerName]);
 
   const addBot = useCallback(() => {
     const newBot: Player = {
