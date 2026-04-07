@@ -21,6 +21,113 @@
     animation: scaleIn 0.25s ease;
     border: 1px solid var(--border);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    padding: var(--space-xl);
+  }
+
+  .auth-modal h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: var(--space-lg);
+    text-align: center;
+    color: var(--text-primary);
+  }
+
+  .auth-modal .form-group {
+    margin-bottom: var(--space-md);
+  }
+
+  .auth-modal .form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xs);
+  }
+
+  .auth-modal input {
+    width: 100%;
+    padding: var(--space-md);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+
+  .auth-modal input:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 4px var(--accent-glow);
+  }
+
+  .auth-modal .error-message {
+    color: var(--color-error);
+    font-size: 0.875rem;
+    margin-bottom: var(--space-md);
+    text-align: center;
+  }
+
+  .auth-modal .btn-primary {
+    width: 100%;
+    padding: var(--space-md);
+    background: var(--gradient-accent);
+    border: none;
+    border-radius: var(--radius-lg);
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .auth-modal .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--color-accent-glow);
+  }
+
+  .auth-modal .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .auth-switch {
+    text-align: center;
+    margin-top: var(--space-lg);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .auth-switch button {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .auth-switch button:hover {
+    text-decoration: underline;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    background: var(--bg-secondary);
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  .modal-close:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
   }
 
   .modal-header {
