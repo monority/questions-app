@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-const securityHeaders = {
+const productionHeaders = {
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
   'X-XSS-Protection': '1; mode=block',
@@ -9,10 +9,9 @@ const securityHeaders = {
   'Permissions-Policy': 'geolocation=(), microphone=(), camera=(), payment=()',
   'Cross-Origin-Opener-Policy': 'same-origin',
   'Cross-Origin-Resource-Policy': 'same-origin',
-  'Cross-Origin-Embedder-Policy': 'require-corp',
   'Content-Security-Policy': [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+    "script-src 'self'",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "font-src 'self'",
@@ -21,7 +20,10 @@ const securityHeaders = {
     "base-uri 'self'",
     "form-action 'self'",
     "upgrade-insecure-requests",
+    "require-trusted-types-for 'script'",
   ].join('; '),
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'X-Permitted-Cross-Domain-Policies': 'none',
 }
 
 export default defineConfig({
@@ -29,12 +31,21 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
-    headers: securityHeaders,
+    headers: {
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Permissions-Policy': 'geolocation=(), microphone=(), camera=(), payment=()',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Resource-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+    },
   },
   preview: {
     host: true,
     port: 4173,
-    headers: securityHeaders,
+    headers: productionHeaders,
   },
   build: {
     target: 'es2020',
