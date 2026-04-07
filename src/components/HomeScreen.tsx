@@ -39,10 +39,10 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [questionCount, setQuestionCount] = useState(10);
   const [players, setPlayers] = useState<Player[]>(() => {
-    if (profile) {
+    if (user && profile) {
       return [{
         id: profile.id,
-        name: profile.username || 'Joueur',
+        name: profile.username || DEFAULT_USERNAME,
         score: 0,
         xp: 0,
         level: 1,
