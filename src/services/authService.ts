@@ -71,6 +71,14 @@ export const AUTH_SERVICE = {
     return data;
   },
 
+  async resetPassword(email: string) {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    
+    if (error) throw error;
+  },
+
   async signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
@@ -160,16 +168,29 @@ export const AUTH_SERVICE = {
 
   async submitScore(userId: string, score: number, username: string) {
     const safeUsername = this.sanitizeUsername(username);
-    const { data: leaderboardData, error: leaderboardError } = await supabase
-      .from('leaderboard')
-      .insert({
-        user_id: userId,
-        username: safeUsername || 'Joueur',
-        score,
-      })
-      .select();
     
-    if (leaderboardError) throw leaderboardError;
+    const { data: existing } = await supabase
+      .from('leaderboard')
+      .select('score')
+      .eq('user_id', userId)
+      .single();
+    
+    if (existing && score <= existing.score) {
+      // Pas besoin d'updater si le nouveau score est inférieur
+    } else {
+      const { error: upsertError } = await supabase
+        .from('leaderboard')
+        .upsert({
+          user_id: userId,
+          username: safeUsername || 'Joueur',
+          score,
+        }, {
+          onConflict: 'user_id',
+          ignoreDuplicates: false,
+        });
+      
+      if (upsertError) throw upsertError;
+    }
 
     const { data: currentProfile, error: profileError } = await supabase
       .from('profiles')
@@ -197,7 +218,7 @@ export const AUTH_SERVICE = {
     if (updateError) throw updateError;
 
     return { 
-      leaderboard: leaderboardData, 
+      leaderboard: null, 
       profile: mapProfileFromSupabase(updatedProfile as SupabaseProfile) 
     };
   },

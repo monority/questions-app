@@ -342,7 +342,12 @@ export function HomeScreen({ onStartGame, theme, onToggleTheme }: HomeScreenProp
         }}
       />
 
-      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      <LoginModal 
+          isOpen={showLoginModal} 
+          onClose={() => {
+            setShowLoginModal(false);
+          }} 
+        />
 
       {showUserSearch && (
         <UserSearch 

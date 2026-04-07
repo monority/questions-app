@@ -127,6 +127,25 @@
     text-decoration: underline;
   }
 
+  .forgot-link {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-top: var(--space-sm);
+  }
+
+  .forgot-link:hover {
+    text-decoration: underline;
+  }
+
+  .forgot-info {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: var(--space-md);
+  }
+
   .modal-close {
     position: absolute;
     top: var(--space-md);

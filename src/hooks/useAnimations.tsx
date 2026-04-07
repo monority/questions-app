@@ -1,7 +1,5 @@
 import { motion } from 'framer-motion';
 
-export const MotionWrapper = motion.div;
-
 export function AnimatedCard({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
   return (
     <motion.div

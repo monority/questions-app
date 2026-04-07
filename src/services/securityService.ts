@@ -52,7 +52,7 @@ export const SECURITY_SERVICE = {
 
   logSecurityEvent(event: string, details: Record<string, unknown> = {}) {
     const safeDetails = Object.fromEntries(
-      Object.entries(details).filter(([_, v]) => 
+      Object.entries(details).filter(([, v]) => 
         typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean'
       )
     );

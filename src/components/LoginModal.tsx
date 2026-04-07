@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 
@@ -8,8 +8,14 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ isOpen, onClose }: LoginModalProps) {
-  const { signIn, signUp, refreshProfile } = useAuth();
-  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const { signIn, signUp, resetPassword, refreshProfile } = useAuth();
+  const [mode, setMode] = useState<'login' | 'register' | 'forgot'>('login');
+
+  useEffect(() => {
+    if (!isOpen) {
+      setMode('login');
+    }
+  }, [isOpen]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -30,11 +36,18 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     try {
       if (mode === 'login') {
         await signIn(email, password);
-      } else {
+        await refreshProfile();
+        onClose();
+      } else if (mode === 'register') {
         await signUp(email, password, username);
+        await refreshProfile();
+        onClose();
+      } else if (mode === 'forgot') {
+        await resetPassword(email);
+        setError('');
+        setMode('login');
+        alert('Email de réinitialisation envoyé !');
       }
-      await refreshProfile();
-      onClose();
       setEmail('');
       setPassword('');
       setUsername('');
@@ -103,10 +116,32 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       >
         <button className="modal-close" onClick={onClose}>×</button>
         
-        <h2>{mode === 'login' ? 'Connexion' : 'Créer un compte'}</h2>
+        <h2>{mode === 'login' ? 'Connexion' : mode === 'register' ? 'Créer un compte' : 'Mot de passe oublié'}</h2>
         
-        <form onSubmit={handleSubmit}>
-          {mode === 'register' && (
+        {mode === 'forgot' ? (
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="ton@email.com"
+                required
+                autoComplete="email"
+              />
+            </div>
+            <button 
+              type="submit" 
+              className="btn-primary" 
+              disabled={loading || !isEmailValid(email)}
+            >
+              {loading ? 'Chargement...' : 'Envoyer le lien'}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            {mode === 'register' && (
             <div className="form-group">
               <label>Pseudo</label>
               <input
@@ -163,21 +198,35 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             className="btn-primary" 
             disabled={loading || (mode === 'register' && (!isPasswordValid || !isEmailValid(email)))}
           >
-            {loading ? 'Chargement...' : mode === 'login' ? 'Se connecter' : 'S\'inscrire'}
+            {loading ? 'Chargement...' : mode === 'login' ? 'Se connecter' : mode === 'register' ? 'S\'inscrire' : 'Envoyer'}
           </button>
         </form>
+        )}
 
-        <p className="auth-switch">
-          {mode === 'login' ? (
-            <>
-              Pas de compte ? <button onClick={() => setMode('register')}>S'inscrire</button>
-            </>
-          ) : (
-            <>
-              Déjà un compte ? <button onClick={() => setMode('login')}>Se connecter</button>
-            </>
-          )}
-        </p>
+        {mode === 'forgot' && (
+          <>
+            <p className="forgot-info">Entrez votre email pour recevoir un lien de réinitialisation</p>
+            <button type="button" className="btn-secondary" onClick={() => setMode('login')}>
+              Retour
+            </button>
+          </>
+        )}
+
+        {mode !== 'forgot' && (
+          <p className="auth-switch">
+            {mode === 'login' ? (
+              <>
+                Pas de compte ? <button onClick={() => setMode('register')}>S'inscrire</button>
+                <br />
+                <button className="forgot-link" onClick={() => setMode('forgot')}>Mot de passe oublié ?</button>
+              </>
+            ) : (
+              <>
+                Déjà un compte ? <button onClick={() => setMode('login')}>Se connecter</button>
+              </>
+            )}
+          </p>
+        )}
       </motion.div>
     </motion.div>
   );

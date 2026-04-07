@@ -95,10 +95,11 @@ export const PLAYER_SERVICE = {
   },
 
   sanitizeName(name: string): string {
+    const CONTROL_CHARS = /[\x00-\x1F\x7F]/gu;
     return name
       .trim()
       .replace(/[<>\"'&]/g, '')
-      .replace(/[\x00-\x1F\x7F]/g, '')
+      .replace(CONTROL_CHARS, '')
       .slice(0, 20);
   },
 
