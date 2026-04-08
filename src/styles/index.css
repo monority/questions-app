@@ -1,14 +1,21 @@
-@import './00-tokens.css';
-@import './01-reset.css';
-@import './02-theme.css';
-@import './03-setup.css';
-@import './04-game.css';
-@import './05-results.css';
-@import './06-shared.css';
-@import './07-animations.css';
-@import './08-responsive.css';
-@import './09-homescreen.css';
-@import './10-leaderboard.css';
-@import './11-multiplayer.css';
-@import './13-modal.css';
-@import './14-user-search.css';
+/* Base */
+@import "./tokens.css";
+@import "./reset.css";
+@import "./theme.css";
+
+/* Screen */
+@import "./setup.css";
+@import "./game.css";
+@import "./results.css";
+
+/* Shared */
+@import "./shared.css";
+@import "./animations.css";
+@import "./responsive.css";
+
+/* Features */
+@import "./homescreen.css";
+@import "./leaderboard.css";
+@import "./multiplayer.css";
+@import "./modal.css";
+@import "./user-search.css";

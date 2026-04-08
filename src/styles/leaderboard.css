@@ -2,7 +2,8 @@
   .leaderboard-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -11,22 +12,26 @@
   }
 
   .leaderboard-modal {
-    background: var(--bg-card);
-    border-radius: var(--radius-lg);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
     width: 90%;
-    max-width: 400px;
+    max-width: 450px;
     max-height: 80vh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    box-shadow: var(--glass-shadow), 0 0 60px var(--color-accent-glow);
   }
 
   .leaderboard-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--space-md);
-    border-bottom: 1px solid var(--border);
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid var(--glass-border);
   }
 
   .leaderboard-header h2 {
@@ -79,28 +84,34 @@
     display: flex;
     align-items: center;
     gap: var(--space-sm);
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-md);
-    margin-bottom: var(--space-xs);
-    background: var(--bg-primary);
-    transition: transform 0.2s;
+    padding: var(--space-md);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-sm);
+    background: var(--glass-bg-light);
+    border: 1px solid var(--glass-border);
+    transition: all var(--duration-normal) var(--ease-default);
   }
 
   .leaderboard-entry:hover {
-    transform: translateX(4px);
+    transform: translateX(8px);
+    background: var(--glass-bg-medium);
+    border-color: var(--accent);
   }
 
   .leaderboard-entry.rank-1 {
-    background: linear-gradient(135deg, var(--color-gold-muted), var(--color-gold-muted));
-    border: 1px solid var(--color-gold);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.1));
+    border: 1px solid var(--gold-primary);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
   }
 
   .leaderboard-entry.rank-2 {
-    background: linear-gradient(135deg, var(--color-silver-muted), var(--color-silver-muted));
+    background: linear-gradient(135deg, rgba(148, 163, 184, 0.2), rgba(192, 192, 192, 0.1));
+    border: 1px solid var(--color-silver);
   }
 
   .leaderboard-entry.rank-3 {
-    background: linear-gradient(135deg, var(--color-bronze-muted), var(--color-bronze-muted));
+    background: linear-gradient(135deg, rgba(205, 127, 50, 0.2), rgba(205, 127, 50, 0.1));
+    border: 1px solid var(--color-bronze);
   }
 
   .entry-rank {

@@ -19,18 +19,24 @@
     max-width: 400px;
     overflow: hidden;
     animation: scaleIn 0.25s ease;
-    border: 1px solid var(--border);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow), 0 0 60px var(--color-accent-glow);
     position: relative;
     padding: var(--space-xl);
   }
 
   .auth-modal h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.75rem;
+    font-weight: 800;
     margin-bottom: var(--space-lg);
     text-align: center;
-    color: var(--text-primary);
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .auth-modal .form-group {
@@ -47,6 +53,8 @@
 
   .auth-modal input {
     width: 100%;
+    background: var(--glass-bg-light);
+    border: 1px solid var(--glass-border);
     padding: var(--space-md);
     border: 2px solid var(--border);
     border-radius: var(--radius-lg);

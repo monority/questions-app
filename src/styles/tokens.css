@@ -70,6 +70,14 @@
   --color-border-light: #475569;
 
   /* ─────────────────────────────────────────────────────────────────
+     BACKGROUND - Premium animated background
+     ───────────────────────────────────────────────────────────────── */
+  --bg-premium: radial-gradient(ellipse at top, #1a1a2e 0%, #0f0f1a 50%);
+  --bg-glow-1: radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+  --bg-glow-2: radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+  --bg-glow-3: radial-gradient(circle at 40% 40%, rgba(99, 102, 241, 0.1) 0%, transparent 40%);
+
+  /* ─────────────────────────────────────────────────────────────────
      GRADIENTS - Predefined gradients
      ───────────────────────────────────────────────────────────────── */
   --gradient-accent: linear-gradient(135deg, var(--color-accent), var(--color-accent-secondary));
@@ -77,6 +85,21 @@
   --gradient-success: linear-gradient(135deg, var(--color-success), var(--color-success-secondary));
   --gradient-warning: linear-gradient(135deg, var(--color-warning), var(--color-warning-secondary));
   --gradient-error: linear-gradient(135deg, var(--color-warning), var(--color-error));
+
+  /* ─────────────────────────────────────────────────────────────────
+     GLASSMORPHISM - Premium 2026 effects
+     ───────────────────────────────────────────────────────────────── */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-bg-light: rgba(255, 255, 255, 0.08);
+  --glass-bg-medium: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --glass-blur: blur(20px);
+  
+  --gold-primary: #f59e0b;
+  --gold-secondary: #fbbf24;
+  --gold-glow: rgba(245, 158, 11, 0.4);
+  --premium-gradient: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
 
   /* ─────────────────────────────────────────────────────────────────
      LAYOUT - Common dimensions
