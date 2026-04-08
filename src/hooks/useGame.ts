@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { Player, GameSettings, Question } from '../types/game';
 import { QUESTION_SERVICE, PLAYER_SERVICE } from '../services';
-import { SECURITY_SERVICE } from '../services/securityService';
 
 interface UseGameState {
   phase: 'setup' | 'playing' | 'final-results';
@@ -26,11 +25,6 @@ export function useGame(): UseGameReturn {
   });
 
   const startGame = useCallback(async (settings: GameSettings, players: Player[]) => {
-    if (SECURITY_SERVICE.isRateLimited('startGame')) {
-      SECURITY_SERVICE.logSecurityEvent('rate_limited', { action: 'startGame' });
-      return;
-    }
-
     try {
       const fetchedQuestions = await QUESTION_SERVICE.fetch(settings.questionsPerRound);
 
@@ -51,11 +45,6 @@ export function useGame(): UseGameReturn {
   }, []);
 
   const restartGame = useCallback(async () => {
-    if (SECURITY_SERVICE.isRateLimited('startGame')) {
-      SECURITY_SERVICE.logSecurityEvent('rate_limited', { action: 'restartGame' });
-      return;
-    }
-
     if (!state.settings) return;
 
     const resetPlayers = state.players.map(PLAYER_SERVICE.resetScore);
