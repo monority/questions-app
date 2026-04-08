@@ -14,9 +14,9 @@
 
   .modal-content {
     background: var(--bg-card);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-2xl);
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     overflow: hidden;
     animation: scaleIn 0.25s ease;
     background: var(--glass-bg);
@@ -57,7 +57,7 @@
     border: 1px solid var(--glass-border);
     padding: var(--space-md);
     border: 2px solid var(--border);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     background: var(--bg-primary);
     color: var(--text-primary);
     font-size: 1rem;
@@ -98,7 +98,7 @@
     padding: var(--space-md);
     background: var(--gradient-accent);
     border: none;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     color: white;
     font-size: 1rem;
     font-weight: 700;
@@ -163,7 +163,7 @@
     color: var(--text-secondary);
     cursor: pointer;
     padding: var(--space-xs) var(--space-sm);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     font-size: 1.5rem;
     line-height: 1;
   }
@@ -195,7 +195,7 @@
     color: white;
     cursor: pointer;
     padding: var(--space-sm);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     transition: var(--transition);
     display: flex;
     align-items: center;
@@ -236,7 +236,7 @@
   .modal-input {
     padding: var(--space-md) var(--space-lg);
     border: 2px solid var(--border);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     background: var(--bg-primary);
     color: var(--text-primary);
     font-size: 1rem;
@@ -263,7 +263,7 @@
     gap: var(--space-sm);
     padding: var(--space-md);
     background: var(--bg-primary);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     font-size: 1.125rem;
     font-weight: 600;
     border: 2px dashed var(--border);
@@ -273,7 +273,7 @@
   .preview-avatar {
     width: 36px;
     height: 36px;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -288,7 +288,7 @@
 
   .avatar-option {
     aspect-ratio: 1;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     border: 2px solid var(--border);
     font-size: 1.5rem;
     cursor: pointer;
@@ -350,7 +350,7 @@
     padding: var(--space-md);
     font-size: 1rem;
     font-weight: 700;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     cursor: pointer;
     transition: all 0.2s;
     border: none;
@@ -433,7 +433,7 @@
     color: var(--text-secondary);
     cursor: pointer;
     padding: var(--space-xs) var(--space-sm);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     font-size: 1.5rem;
     line-height: 1;
   }
@@ -477,7 +477,7 @@
   .stat-card {
     background: var(--bg-primary);
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     padding: var(--space-md);
     display: flex;
     flex-direction: column;
@@ -514,7 +514,7 @@
     padding: 1rem 1.25rem;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     animation: slideIn 0.3s ease;
     min-width: 280px;

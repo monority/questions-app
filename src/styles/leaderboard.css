@@ -16,7 +16,7 @@
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-2xl);
     width: 90%;
     max-width: 450px;
     max-height: 80vh;
@@ -45,7 +45,7 @@
     color: var(--text-secondary);
     cursor: pointer;
     padding: var(--space-xs);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-lg);
     transition: background 0.2s;
   }
 
