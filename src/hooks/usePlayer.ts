@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Player, Badge } from '../types/game';
 import { PLAYER_SERVICE } from '../services/playerService';
+import { SECURITY_SERVICE } from '../services/securityService';
 import { LEVELS } from '../types/game';
 
 interface UsePlayerReturn {
@@ -28,14 +29,14 @@ export function usePlayer(): UsePlayerReturn {
           id: data.id || crypto.randomUUID(),
           name: data.name || 'Joueur',
           score: 0,
-          xp: data.xp || 0,
-          level: data.level || 1,
+          xp: SECURITY_SERVICE.validateXp(data.xp || 0),
+          level: SECURITY_SERVICE.validateLevel(data.level || 1),
           color: { bg: '#6366f1', border: '#818cf8', name: 'Violet' },
           answers: [],
           streak: 0,
-          maxStreak: data.maxStreak || 0,
+          maxStreak: Math.max(0, Math.min(1000, data.maxStreak || 0)),
           status: 'playing',
-          badges: data.badges || [],
+          badges: (Array.isArray(data.badges) ? data.badges : []).filter((b: unknown): b is Badge => b !== null && typeof b === 'object' && typeof (b as { id?: unknown }).id === 'string'),
         });
       } catch {
         setPlayer(null);

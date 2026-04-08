@@ -5,6 +5,7 @@ import { useTheme } from './hooks/useTheme';
 import { useAuth } from './hooks/useAuth';
 import { useToast } from './hooks/useToast';
 import { AUTH_SERVICE } from './services/authService';
+import { SECURITY_SERVICE } from './services/securityService';
 import type { Player } from './types/game';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
@@ -43,16 +44,26 @@ function App() {
   const handleGameEnd = async (players: Player[]) => {
     const mainPlayer = players[0];
     if (mainPlayer) {
-      const earnedBadges = updateStats(mainPlayer.answers.map(a => ({
+      const validatedAnswers = mainPlayer.answers.map(a => ({
         correct: a.correct,
-        timeMs: a.timeMs,
-        points: a.points,
-      })));
+        timeMs: SECURITY_SERVICE.validateTimeMs(a.timeMs),
+        points: SECURITY_SERVICE.validateScore(a.points),
+      }));
+      
+      const earnedBadges = updateStats(validatedAnswers);
       
       if (user && profile && !isSubmittingScore) {
+        if (SECURITY_SERVICE.isRateLimited('submitScore')) {
+          SECURITY_SERVICE.logSecurityEvent('rate_limited', { action: 'submitScore' });
+          showToast('Veuillez patienter avant de soumettre à nouveau', 'error');
+          game.endGame(players);
+          return;
+        }
+        
+        const validatedScore = SECURITY_SERVICE.validateScore(mainPlayer.score);
         setIsSubmittingScore(true);
         try {
-          await AUTH_SERVICE.submitScore(user.id, mainPlayer.score, profile.username);
+          await AUTH_SERVICE.submitScore(user.id, validatedScore, profile.username);
           await refreshProfile();
         } catch (err) {
           console.error('Failed to submit score:', err);
